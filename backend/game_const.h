@@ -30,9 +30,8 @@ struct ResourcePlantStats {
     double build_cost;
     double maintenance_cost;
     double product_per_turn;
-    double purity_lv1_mult;
-    double purity_lv2_mult;
-    double purity_lv3_mult;
+    int purity_level;
+    double waste_output;
     double explore_cost;
 };
 
