@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>C++ Web Game Menu</title>
+    <link rel="stylesheet" href="mainmenu_Style.css">
+</head>
+<body>
+
+    <div class="menu-container">
+        <h1>ENERGY NOT INCLUDED</h1>
+        
+        <div class="menu-item">
+            <label for="player-count">Players: <span id="player-val">3</span></label>
+            <button onclick="decrementPlayers()">-</button>
+            <button onclick="incrementPlayers()">+</button>
+        </div>
+
+        <div class="menu-item">
+            <label for="map-select">Select Map</label>
+            <select id="map-select">
+                <option value="factory">The Rust Factory</option>
+            </select>
+        </div>
+
+        <div class="menu-item">
+            <label for="difficulty">Difficulty</label>
+            <select id="difficulty">
+                <option value="easy">Beginner</option>
+           
+            </select>
+        </div>
+
+
+        <button class="start-btn" onclick="startGame()">INITIALIZE MISSION</button>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
