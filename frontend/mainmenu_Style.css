@@ -18,12 +18,16 @@ body {
     width: 350px;
     text-align: center;
 }
-
-h1 {
+.menu-container h1 {
     letter-spacing: 5px;
-    color: #00ffcc;
-    text-shadow: 0 0 10px #00ffcc;
+    color: #ffffff;
+    text-shadow: 0 0 10px #ffffff;
 }
+.menu-container h1 .NOT {
+    color: #ff0044;
+    text-shadow: 0 0 10px #ff0044;
+}
+
 
 .menu-item {
     margin: 25px 0;
