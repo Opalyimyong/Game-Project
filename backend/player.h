@@ -31,7 +31,6 @@ class Player {
         bool disposeWaste(double amount); //check money >> delete waste >> executeAction
         double getEfficiencyModifier() const { return 0.8; }
         void resetActionPoints() { AP_ = 3; }
-        void registerBuilding(Building* building);
+        void registerBuilding(Building* building);  //add building to vec buildings_
         int calculateAssetValue() const; //cal all value
-
 };
