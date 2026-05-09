@@ -10,6 +10,7 @@ class Player {
         int AP_; // Action Point 3 points per turn
         double waste_; // > 100
         std::vector<Building*> buildings_;
+        std::string whileError_ = "";
     public:
         // Constructor & Destructor
         Player(const std::string& id);
@@ -20,7 +21,7 @@ class Player {
         int getCoins() const { return coins_; }
         int getActionPoints() const { return AP_; }
         double getTotalWaste() const { return waste_; }
-        bool isBankrupt() const {if (coins_ <= 0.0) { return true; }}
+        bool isBankrupt() const {if (coins_ < 0.0) { return true; }}
         bool isGameOver() const {if (isBankrupt() or waste_ >= 100) { return true; }}
 
         // Setter
@@ -29,8 +30,10 @@ class Player {
         void addCoins(double amount);
         void addWaste(double amount);
         bool disposeWaste(double amount); //check money >> delete waste >> executeAction
-        double getEfficiencyModifier() const { return 0.8; }
-        void resetActionPoints() { AP_ = 3; }
+        double getEfficiencyModifier() const;
+        void resetActionPoints();
         void registerBuilding(Building* building);  //add building to vec buildings_
-        int calculateAssetValue() const; //cal all value
+        double calculateAssetValue() const; //cal all value
+        bool isBankrupt() const;
+        bool isGameOver() const;
 };
