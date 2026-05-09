@@ -1,6 +1,6 @@
 #pragma once
 
-//Base
+//Base Data
 
 enum class ResourceType {
     Coal, Gas, Biomass, Uranium
