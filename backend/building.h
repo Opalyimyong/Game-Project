@@ -18,14 +18,14 @@ public:
     Building(const int& id, Player* owner, const std::vector<int> location_node);
     virtual ~Building() = default;
 
-    //Getter
-    const int& getId() const;
-    bool IsActive() const;
-    int getLevel() const;
-    Player* getOwner() const;
-    const std::vector<int>& getLocationNode() const;
+    // Getter
+    const int& getId() const { return id_; }
+    bool IsActive() const { return is_active_; }
+    int getLevel() const { return level_; }
+    Player* getOwner() const { return owner_; }
+    const std::vector<int>& getLocationNode() const { return location_node_; }
 
-    //Setter
+    // Setter
     bool toggleStatus(bool status);
     virtual bool upgrade() = 0; //need to overide
     virtual double process() = 0; //need to overide
@@ -38,14 +38,14 @@ private:
     double resource_;
     ResourcePlantStats stats_;
 public:
-    //Constructor
+    // Constructor
     ResourcePlant(const int& id, Player* owner, const std::vector<int> location_node, ResourceType type);
     
-    //Getter
+    // Getter
     ResourceType getType() const;
     double getStorage() const;
 
-    //Setter
+    // Setter
     double consumeStorage(double amount);
     bool upgrade() override; //Check Coin >> Upgrade Level >> Pay Coin
     double process() override; //Process Resorce & Waste by stats_ >> Add to Storage
