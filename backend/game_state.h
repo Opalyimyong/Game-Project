@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include "link.h"
 
 enum class ActionType {
     BuildPowerPlant,
@@ -12,10 +13,12 @@ enum class ActionType {
 
 class Player {
 public:
-    Player(const std::string& name) : name_(name), action_points_(3) {}
+    Player(const std::string& name) : name_(name), action_points_(3), link_manager_() {}
 
     const std::string& GetName() const { return name_; }
     int GetActionPoints() const { return action_points_; }
+    LinkManager& GetLinkManager() { return link_manager_; }
+    const LinkManager& GetLinkManager() const { return link_manager_; }
 
     bool CanPerformAction() const { return action_points_ > 0; }
     void SpendActionPoint() { if (action_points_ > 0) action_points_--; }
@@ -24,6 +27,7 @@ public:
 private:
     std::string name_;
     int action_points_;
+    LinkManager link_manager_;
 };
 
 class GameState {
