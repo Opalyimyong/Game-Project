@@ -2,6 +2,7 @@
 
 using namespace GameData;
 
+// Data for PowerPlant Node & Building in each type+level
 const PowerPlantStats& GetPowerPlantStats(PlantType type, int level) {
     switch (type) {
         case PlantType::CoalPlant:
@@ -233,6 +234,7 @@ const PowerPlantStats& GetPowerPlantStats(PlantType type, int level) {
     }
 }
 
+// Data for ResourcePlant Node & Building in each type+level
 const ResourcePlantStats& GetResourcePlantStats(ResourceType type, int purity_level) {
     switch (type) {
         case ResourceType::Coal:
@@ -356,3 +358,20 @@ const ResourcePlantStats& GetResourcePlantStats(ResourceType type, int purity_le
     }
 }
 
+// Create City Data for Add in Node
+CityData CreateCityData (CityType type, double min, double max, double charge) {
+    return {type, min, max, charge};
+}
+
+//Send Rate of Calculate Shipping Cost
+double GetTranportRate (TransportType item) {
+    switch (item)
+    {
+    case TransportType::Resource :
+        return 0.5;
+    case TransportType::Energy :
+        return 0.2;
+    default:
+        return 0;
+    }
+}
