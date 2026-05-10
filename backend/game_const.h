@@ -2,6 +2,8 @@
 
 //Base Data
 
+class Player;
+
 enum class ResourceType {
     Coal, Gas, Biomass, Uranium
 };

@@ -19,11 +19,9 @@ class Player {
 
         // Getter
         const std::string& getId() const { return id_; }
-        int getCoins() const { return coins_; }
+        double getCoins() const { return coins_; }
         int getActionPoints() const { return AP_; }
         double getTotalWaste() const { return waste_; }
-        bool isBankrupt() const {if (coins_ < 0.0) { return true; }}
-        bool isGameOver() const {if (isBankrupt() or waste_ >= 100) { return true; }}
 
         // Setter
         bool executeManualAction(double cost); //Use Action + Use Coin

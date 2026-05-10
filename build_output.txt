@@ -1,0 +1,144 @@
+backend/game_data.cpp: In function 'const PowerPlantStats& GetPowerPlantStats(PlantType, int)':
+backend/game_data.cpp:18:48: warning: returning reference to temporary [-Wreturn-local-addr]
+   18 |                              .waste_mult = 0.6 };
+      |                                                ^
+backend/game_data.cpp:27:49: warning: returning reference to temporary [-Wreturn-local-addr]
+   27 |                              .waste_mult = 0.51 };
+      |                                                 ^
+backend/game_data.cpp:36:49: warning: returning reference to temporary [-Wreturn-local-addr]
+   36 |                              .waste_mult = 0.42 };
+      |                                                 ^
+backend/game_data.cpp:37:34: warning: returning reference to temporary [-Wreturn-local-addr]
+   37 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:50:48: warning: returning reference to temporary [-Wreturn-local-addr]
+   50 |                              .waste_mult = 0.5 };
+      |                                                ^
+backend/game_data.cpp:59:50: warning: returning reference to temporary [-Wreturn-local-addr]
+   59 |                              .waste_mult = 0.425 };
+      |                                                  ^
+backend/game_data.cpp:68:49: warning: returning reference to temporary [-Wreturn-local-addr]
+   68 |                              .waste_mult = 0.35 };
+      |                                                 ^
+backend/game_data.cpp:69:34: warning: returning reference to temporary [-Wreturn-local-addr]
+   69 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:82:48: warning: returning reference to temporary [-Wreturn-local-addr]
+   82 |                              .waste_mult = 0.4 };
+      |                                                ^
+backend/game_data.cpp:91:49: warning: returning reference to temporary [-Wreturn-local-addr]
+   91 |                              .waste_mult = 0.34 };
+      |                                                 ^
+backend/game_data.cpp:100:49: warning: returning reference to temporary [-Wreturn-local-addr]
+  100 |                              .waste_mult = 0.28 };
+      |                                                 ^
+backend/game_data.cpp:101:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  101 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:114:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  114 |                              .waste_mult = 0.0 };
+      |                                                ^
+backend/game_data.cpp:123:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  123 |                              .waste_mult = 0.0 };
+      |                                                ^
+backend/game_data.cpp:132:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  132 |                              .waste_mult = 0.0 };
+      |                                                ^
+backend/game_data.cpp:133:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  133 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:146:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  146 |                              .waste_mult = 0.0 };
+      |                                                ^
+backend/game_data.cpp:155:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  155 |                              .waste_mult = 0.0 };
+      |                                                ^
+backend/game_data.cpp:164:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  164 |                              .waste_mult = 0.0 };
+      |                                                ^
+backend/game_data.cpp:165:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  165 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:178:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  178 |                              .waste_mult = 0.1 };
+      |                                                ^
+backend/game_data.cpp:187:50: warning: returning reference to temporary [-Wreturn-local-addr]
+  187 |                              .waste_mult = 0.085 };
+      |                                                  ^
+backend/game_data.cpp:196:49: warning: returning reference to temporary [-Wreturn-local-addr]
+  196 |                              .waste_mult = 0.07 };
+      |                                                 ^
+backend/game_data.cpp:197:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  197 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:210:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  210 |                              .waste_mult = 4.0 };
+      |                                                ^
+backend/game_data.cpp:219:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  219 |                              .waste_mult = 3.4 };
+      |                                                ^
+backend/game_data.cpp:228:48: warning: returning reference to temporary [-Wreturn-local-addr]
+  228 |                              .waste_mult = 2.8 };
+      |                                                ^
+backend/game_data.cpp:229:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  229 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:233:21: warning: returning reference to temporary [-Wreturn-local-addr]
+  233 |             return {};
+      |                     ^
+backend/game_data.cpp: In function 'const ResourcePlantStats& GetResourcePlantStats(ResourceType, int)':
+backend/game_data.cpp:249:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  249 |                              .explore_cost = 25.0 };
+      |                                                   ^
+backend/game_data.cpp:257:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  257 |                              .explore_cost = 25.0 };
+      |                                                   ^
+backend/game_data.cpp:265:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  265 |                              .explore_cost = 25.0 };
+      |                                                   ^
+backend/game_data.cpp:266:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  266 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:278:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  278 |                              .explore_cost = 40.0 };
+      |                                                   ^
+backend/game_data.cpp:286:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  286 |                              .explore_cost = 40.0 };
+      |                                                   ^
+backend/game_data.cpp:294:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  294 |                              .explore_cost = 40.0 };
+      |                                                   ^
+backend/game_data.cpp:295:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  295 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:307:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  307 |                              .explore_cost = 50.0 };
+      |                                                   ^
+backend/game_data.cpp:315:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  315 |                              .explore_cost = 50.0 };
+      |                                                   ^
+backend/game_data.cpp:323:51: warning: returning reference to temporary [-Wreturn-local-addr]
+  323 |                              .explore_cost = 50.0 };
+      |                                                   ^
+backend/game_data.cpp:324:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  324 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:336:52: warning: returning reference to temporary [-Wreturn-local-addr]
+  336 |                              .explore_cost = 150.0 };
+      |                                                    ^
+backend/game_data.cpp:344:52: warning: returning reference to temporary [-Wreturn-local-addr]
+  344 |                              .explore_cost = 150.0 };
+      |                                                    ^
+backend/game_data.cpp:352:52: warning: returning reference to temporary [-Wreturn-local-addr]
+  352 |                              .explore_cost = 150.0 };
+      |                                                    ^
+backend/game_data.cpp:353:34: warning: returning reference to temporary [-Wreturn-local-addr]
+  353 |                 default: return {};
+      |                                  ^
+backend/game_data.cpp:357:21: warning: returning reference to temporary [-Wreturn-local-addr]
+  357 |             return {};
+      |                     ^
+C:/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: C:\Users\khemj\AppData\Local\Temp\ccIqmVlc.o:building.cpp:(.text+0x20e): undefined reference to `GameData::GetResourcePlantStats(ResourceType, int)'
+C:/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: C:\Users\khemj\AppData\Local\Temp\ccIqmVlc.o:building.cpp:(.text+0x3ea): undefined reference to `GameData::GetPowerPlantStats(PlantType, int)'
+C:/msys64/ucrt64/bin/../lib/gcc/x86_64-w64-mingw32/15.2.0/../../../../x86_64-w64-mingw32/bin/ld.exe: C:\Users\khemj\AppData\Local\Temp\ccIqmVlc.o:building.cpp:(.text+0x529): undefined reference to `GameData::GetPowerPlantStats(PlantType, int)'
+collect2.exe: error: ld returned 1 exit status
