@@ -81,18 +81,19 @@ class CityNode : public Node {
 
 class PowerPlantNode : public Node {
     public:
-        PowerPlantNode(float x, float y) : Node(x, y, NodeType::Power) {} //contructor
+        PowerPlantNode(float x, float y) : Node(x, y, NodeType::Power), source_type_(SourceType::None) {} //contructor
         float getSolarIndex() const { return solar_index_; } //passive gain จาก solar
         float getWindIndex() const { return wind_index_; } //passive gain จาก wind
         bool hasWater() const { return has_water_; } //มีแหล่งนํ้าหรือไม่
         float getEnvironmentMultiplier(PlantType type) const; 
-        void checkFactoryType() const{} 
-
+        void checkFactoryType(){} 
+        void fetchPlantType(){}
     private:
         float solar_index_;
         float wind_index_;
         bool has_water_;
         SourceType source_type_;
+        PlantType plant_type_;
 };
 
 class ResourceNode : public Node {
@@ -102,7 +103,8 @@ class ResourceNode : public Node {
         int getPurityLevel() const { return purity_level_; } //ระดับความบริสุทธิ์ของทรัพยากร
         void resourceOwner(Player* player) { owner_ = player; } //กําหนดเจ้าของทรัพยากร
         float getPurityMultiplier() const{}
-
+        void fetchResourceType(){}
+        
     private:
         ResourceType resource_type_;
         int purity_level_;
@@ -110,4 +112,6 @@ class ResourceNode : public Node {
         Player* owner_;
 
 };
+
+
 

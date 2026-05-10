@@ -4,6 +4,12 @@
 
 class Player;
 
+enum class SourceType {
+    Resource_Based,
+    Passive,
+    None
+};
+
 enum class ResourceType {
     Coal, Gas, Biomass, Uranium
 };
@@ -56,18 +62,6 @@ struct PowerPlantStats {
 struct Item { //Item sending type For communicate Link & Building
     TransportType type;
     double amount;
-};
-
-enum class PassiveType {
-    Solar,
-    Wind,
-    Water,
-    None
-};
-
-enum class SourceType {
-    Passive,
-    Resource_Based
 };
 
 struct CityContract {
