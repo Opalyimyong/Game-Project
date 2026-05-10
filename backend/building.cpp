@@ -7,7 +7,7 @@ Building::Building(const int &id, Player *owner, const std::vector<int> location
 
 bool Building::toggleStatus(bool status)
 {
-    if ((is_active_ == true) and (status == false))
+    if ((is_active_ == true) && (status == false))
     {
         is_active_ = false;
         return true;
@@ -49,6 +49,11 @@ bool ResourcePlant::process()
 int ResourcePlant::getCurrentValue() const
 { // 70% of Build Cost
     return static_cast<int>(stats_.build_cost * 70 / 100);
+}
+
+SourceType ResourcePlant::getSourceType() const
+{
+    return SourceType::Resource_Based;
 }
 
 // PowerPlant Class
@@ -106,7 +111,7 @@ bool PowerPlant::upgrade()
         int next_level = level_ + 1;
         PowerPlantStats next_stats = GameData::GetPowerPlantStats(type_, next_level);
         double upgrade_cost = next_stats.build_cost;
-        if (owner_ != nullptr and owner_->executeManualAction(upgrade_cost))
+        if (owner_ != nullptr && owner_->executeManualAction(upgrade_cost))
         {
             level_ = next_level;
             stats_ = next_stats;

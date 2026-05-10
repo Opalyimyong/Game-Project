@@ -36,6 +36,7 @@ public:
     virtual void processWaste() = 0;         // add waste output to building's waste
     virtual bool process() = 0;              // need to overide
     virtual int getCurrentValue() const = 0; // need to overide
+    virtual SourceType getSourceType() const = 0; // return building source type
 };
 
 class ResourcePlant : public Building
@@ -57,6 +58,7 @@ public:
     void processWaste() override; // Process Waste by stats_ >> Add to Building's Waste
     bool process() override;      // Process Resorce & Waste by stats_ >> Add to Storage
     int getCurrentValue() const override;
+    SourceType getSourceType() const override; // resources are resource-based
 };
 
 class PowerPlant : public Building
@@ -75,7 +77,7 @@ public:
     // Getter
     PlantType getType() const { return type_; }
     Item getResourceInput() const { return resource_input_; }
-    SourceType getSourceType() const { return source_type_; }
+    SourceType getSourceType() const override { return source_type_; }
     PassiveType getPassiveType() const { return passive_type_; }
 
     // Setter

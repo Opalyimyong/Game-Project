@@ -1,5 +1,5 @@
 #include "node.h"
-
+#include "building.h"
 Node::Node(float x, float y, NodeType type)
     : pose_{x, y}, type_(type), building_(nullptr) {}
 
@@ -15,7 +15,8 @@ void CityNode::newContract(Player* player, float amount) {
  void PowerPlantNode::checkFactoryType() const {
     if (HasBuilding()) {
         Building* building = GetBuilding();
-        if (building->getItem().type == TransportType::Resource) {
+        if (building->getSourceType() == SourceType::Passive) {
+   
           
           
     }
