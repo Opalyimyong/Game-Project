@@ -8,13 +8,14 @@ class TestBuilding : public Building
 {
 public:
     TestBuilding(int id, Player *owner, const std::vector<int> &location_node)
-        : Building(id, owner, location_node, {TransportType::Resource, 0.0}) {}
+        : Building(id, BuildingType::ResourcePlant, owner, location_node, {TransportType::Resource, 0.0}) {}
 
-    Item getItem() const override { return item_; }
+    Item getItem() const { return item_; }
     bool upgrade() override { return false; }
     void processWaste() override {}
     bool process() override { return true; }
     int getCurrentValue() const override { return 0; }
+    SourceType getSourceType() const override { return SourceType::Resource_Based; }
 };
 
 int main()
