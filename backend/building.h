@@ -65,6 +65,8 @@ private:
     PlantType type_;
     Item resource_input_;
     PowerPlantStats stats_;
+    SourceType source_type_;
+    PassiveType passive_type_ = PassiveType::None;
 
 public:
     // Contructor & Destructor

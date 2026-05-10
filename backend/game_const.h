@@ -61,8 +61,10 @@ struct Item { //Item sending type For communicate Link & Building
 enum class PassiveType {
     Solar,
     Wind,
-    Water
+    Water,
+    None
 };
+
 enum class SourceType {
     Passive,
     Resource_Based

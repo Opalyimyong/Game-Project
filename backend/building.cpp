@@ -56,6 +56,35 @@ PowerPlant::PowerPlant(const int &id, Player *owner, const std::vector<int> loca
     : Building(id, owner, location_node, {TransportType::Energy, 0.0}), type_(type)
 {
     stats_ = GameData::GetPowerPlantStats(type, level_);
+    switch (type_)
+    {
+    case PlantType::CoalPlant:
+        source_type_ = SourceType::Resource_Based;
+        break;
+    case PlantType::GasPlant:
+        source_type_ = SourceType::Resource_Based;
+        break;
+    case PlantType::BiomassPlant:
+        source_type_ = SourceType::Resource_Based;
+        break;
+    case PlantType::SolarPlant:
+        source_type_ = SourceType::Passive;
+        passive_type_ = PassiveType::Solar;
+        break;
+    case PlantType::WindPlant:
+        source_type_ = SourceType::Passive;
+        passive_type_ = PassiveType::Wind;
+        break;
+    case PlantType::HydroPlant:
+        source_type_ = SourceType::Passive;
+        passive_type_ = PassiveType::Water;
+        break;
+    case PlantType::NuclearPlant:
+        source_type_ = SourceType::Resource_Based;
+        break;
+    default:
+        break;
+    }
 }
 
 bool PowerPlant::addResourceInput(Item input)
