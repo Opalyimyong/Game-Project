@@ -2,8 +2,8 @@
 #include "player.h"
 
 // Building Class
-Building::Building(const int &id, Player *owner, const std::vector<int> location_node, Item item)
-    : id_(id), is_active_(true), level_(1), owner_(owner), location_node_(location_node), item_(item) {}
+Building::Building(const int &id, BuildingType building_type, Player *owner, const std::vector<int> location_node, Item item)
+    : id_(id), is_active_(true), level_(1), building_type_(building_type), owner_(owner), location_node_(location_node), item_(item) {}
 
 bool Building::toggleStatus(bool status)
 {
@@ -25,7 +25,7 @@ bool Building::toggleStatus(bool status)
 
 // ResourcePlant Class
 ResourcePlant::ResourcePlant(const int &id, Player *owner, const std::vector<int> location_node, ResourceType type, int purity_level)
-    : Building(id, owner, location_node, {TransportType::Resource, 0.0}), type_(type), purity_level_(purity_level)
+    : Building(id, BuildingType::ResourcePlant, owner, location_node, {TransportType::Resource, 0.0}), type_(type), purity_level_(purity_level)
 {
     level_ = purity_level_;
     stats_ = GameData::GetResourcePlantStats(type, level_);
@@ -58,7 +58,7 @@ SourceType ResourcePlant::getSourceType() const
 
 // PowerPlant Class
 PowerPlant::PowerPlant(const int &id, Player *owner, const std::vector<int> location_node, PlantType type)
-    : Building(id, owner, location_node, {TransportType::Energy, 0.0}), type_(type)
+    : Building(id, BuildingType::PowerPlant, owner, location_node, {TransportType::Energy, 0.0}), type_(type)
 {
     stats_ = GameData::GetPowerPlantStats(type, level_);
     switch (type_)

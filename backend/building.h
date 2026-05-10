@@ -4,6 +4,11 @@
 
 #include "game_data.h"
 
+enum class BuildingType {
+    ResourcePlant,
+    PowerPlant
+};
+
 class Player;
 
 class Building
@@ -12,19 +17,21 @@ protected:
     int id_;
     bool is_active_;
     int level_;
+    BuildingType building_type_;
     Player *owner_; // prt to class Player for using function in Player
     std::vector<int> location_node_;
     Item item_;                 // Product for send to node and link
     double waste_output_ = 0.0; // waste output per turn
 public:
     // Contructor & Destructor
-    Building(const int &id, Player *owner, const std::vector<int> location_node, Item item);
+    Building(const int &id, BuildingType building_type, Player *owner, const std::vector<int> location_node, Item item);
     virtual ~Building() = default;
 
     // Getter
     const int &getId() const { return id_; }
     bool IsActive() const { return is_active_; }
     int getLevel() const { return level_; }
+    BuildingType getBuildingType() const { return building_type_; }
     Player *getOwner() const { return owner_; }
     const std::vector<int> &getLocationNode() const { return location_node_; }
     double getWasteOutput() const { return waste_output_; }
