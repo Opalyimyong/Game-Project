@@ -13,9 +13,11 @@ protected:
     int level_;
     Player* owner_;
     std::vector<int> location_node_;
+    Item item_; //for send to node and link
+    double waste_output_ = 0.0; //waste output per turn
 public:
     // Contructor & Destructor
-    Building(const int& id, Player* owner, const std::vector<int> location_node);
+    Building(const int& id, Player* owner, const std::vector<int> location_node, Item item);
     virtual ~Building() = default;
 
     // Getter
@@ -24,40 +26,58 @@ public:
     int getLevel() const { return level_; }
     Player* getOwner() const { return owner_; }
     const std::vector<int>& getLocationNode() const { return location_node_; }
+    double getWasteOutput() const { return waste_output_; }
+    virtual Item getItem() const = 0; //override for resource and energy >> Send This to Node and Link
 
     // Setter
-    bool toggleStatus(bool status);
+    bool toggleStatus(bool status); //in case player off plant and want to turn again
     virtual bool upgrade() = 0; //need to overide
-    virtual double process() = 0; //need to overide
+    virtual void processWaste() = 0; //add waste output to building's waste
+    virtual bool process() = 0; //need to overide
     virtual int getCurrentValue() const = 0; //need to overide
 };
 
 class ResourcePlant : public Building {
 private:
     ResourceType type_;
-    double resource_;
     ResourcePlantStats stats_;
+    int purity_level_;
 public:
     // Constructor
-    ResourcePlant(const int& id, Player* owner, const std::vector<int> location_node, ResourceType type);
+    ResourcePlant(const int& id, Player* owner, const std::vector<int> location_node, ResourceType type, int purity_level);
     
     // Getter
-    ResourceType getType() const;
-    double getStorage() const;
+    ResourceType getType() const { return type_; }
+    Item getItem() const override { return item_; }
 
     // Setter
-    double consumeStorage(double amount);
-    bool upgrade() override; //Check Coin >> Upgrade Level >> Pay Coin
-    double process() override; //Process Resorce & Waste by stats_ >> Add to Storage
+    bool upgrade() override; //resource cannot upgrade
+    void processWaste() override; //Process Waste by stats_ >> Add to Building's Waste
+    bool process() override; //Process Resorce & Waste by stats_ >> Add to Storage
     int getCurrentValue() const override;
 };
 
 class PowerPlant : public Building {
 private:
-    /* data */
+    PlantType type_;
+    Item resource_input_;
+    Item energy_;
+    PowerPlantStats stats_;
 public:
-    PowerPlant
-(/* args */);
-    ~PowerPlant
-();
+    // Contructor & Destructor
+    PowerPlant(const int& id, Player* owner, const std::vector<int> location_node, PlantType type);
+
+    //Getter
+    PlantType getType() const { return type_; }
+    Item getResourceInput() const { return resource_input_; }
+    Item getItem() const override { return energy_; }
+    
+    // Setter
+    bool addResourceInput(Item input); //input resource from outter
+    void clearResourceInput(); //at end of process
+
+    bool upgrade() override; //Check Coin >> Upgrade Level >> Pay Coin
+    void processWaste() override; //Process Waste by stats_ >> Add to Building's Waste
+    bool process() override; //Process Resorce & Waste by stats_ >> Add to Storage
+    int getCurrentValue() const override;
 };
