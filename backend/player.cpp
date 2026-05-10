@@ -76,6 +76,6 @@ bool Player::isBankrupt() const
 
 bool Player::isGameOver() const
 {
-    {if (isBankrupt() or waste_ >= 100) { return true; }}
+    {if (isBankrupt() || waste_ >= 100) { return true; }}
     return false;
 }

@@ -4,17 +4,23 @@
 #include <memory>
 #include "building.h"
 #include "game_const.h"
+#include "player.h"
+
 enum class NodeType {
     City,
     Power,
     Resource
 };
-// enum class NodePassiveGain{
-//     solar,
-//     wind,
-//     water,
-//     none
-// };
+enum class PassiveType {
+    Solar,
+    Wind,
+    Water
+};
+enum class SourceType {
+    Passive,
+    Resource_Based
+};
+
 struct NodePose {
     float x;
     float y;
@@ -35,7 +41,6 @@ public:
     NodeType GetType() const { return type_; }
     Building* GetBuilding() const { return building_.get(); }
     bool HasBuilding() const { return building_ != nullptr; }
-
     void SetBuilding(std::unique_ptr<Building> building) {
         building_ = std::move(building);
     }
@@ -63,16 +68,19 @@ float GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB);
 class CityNode : public Node {
     public:
         CityNode(float x, float y) : Node(x, y, NodeType::City) {} //Contructor
-        float getCurrentDemand() const { return current_demand_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
         float getElectricityPrice() const { return electricity_price_; } //เช็ค rate ค่าไฟ
+        float getCurrentDemandTillActive() const { return city_data_.min_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
+        float getCurrentDemandTillFullyPowered() const { return city_data_.max_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
+        float EnergyNow() const { return energy_now_; } //Initial Energy
         bool isPowered() const { return is_powered_; } //ไฟพอไหม
+        bool isFullyPowered() const{ return energy_now_ >= city_data_.max_Energy; }; //max หรือยัง
         CityData getCityData() const { return city_data_; } //เอาข้อมูลเมืองมาใช้
-        const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
-        float recieveEnergyFrom(const Player*, float amount); //รับไฟจากใคร เท่าไหร่
-        bool isFullyPowered() const{}; //max หรือยัง
-        void resetTurnDelivery(){}; //ยังไม่ได้ใช้ 
 
+        const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
+        void newContract(Player* player, float amount); //รับไฟจากใคร เท่าไหร่
+        
     private:
+        float energy_now_; //ไฟ้ฟ้าในปัจจุบัน
         float current_demand_;  //ความต้องการไฟฟ้าปัจจุบัน
         float electricity_price_;  //ราคาค่าไฟฟ้าต่อหน่วย
         bool is_powered_; //เมือง active หรือยัง
@@ -86,13 +94,14 @@ class PowerPlantNode : public Node {
         float getSolarIndex() const { return solar_index_; } //passive gain จาก solar
         float getWindIndex() const { return wind_index_; } //passive gain จาก wind
         bool hasWater() const { return has_water_; } //มีแหล่งนํ้าหรือไม่
-        // float getEnvironmentMultiplier(PlantType type) const; 
-        
+        float getEnvironmentMultiplier(PlantType type) const; 
+        void checkFactoryType() const{} 
+
     private:
         float solar_index_;
         float wind_index_;
         bool has_water_;
-    
+        SourceType source_type_;
 };
 
 class ResourceNode : public Node {

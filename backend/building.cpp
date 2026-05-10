@@ -5,16 +5,21 @@
 Building::Building(const int &id, Player *owner, const std::vector<int> location_node, Item item)
     : id_(id), is_active_(true), level_(1), owner_(owner), location_node_(location_node), item_(item) {}
 
+<<<<<<< Updated upstream
 bool Building::toggleStatus(bool status)
 {
     if ((is_active_ == true) and (status == false))
+=======
+bool Building::toggleStatus(bool status) {
+    if ((is_active_ == true) && (status == false))
+>>>>>>> Stashed changes
     {
         is_active_ = false;
         return true;
     }
-    if ((is_active_ == false) and (status == true))
+    if ((is_active_ == false) && (status == true))
     {
-        if ((owner_ != nullptr) and (owner_->executeManualAction(0)))
+        if ((owner_ != nullptr) && (owner_->executeManualAction(0)))
         {
             is_active_ = true;
             return true;
@@ -77,8 +82,12 @@ bool PowerPlant::upgrade()
         int next_level = level_ + 1;
         PowerPlantStats next_stats = GameData::GetPowerPlantStats(type_, next_level);
         double upgrade_cost = next_stats.build_cost;
+<<<<<<< Updated upstream
         if (owner_ != nullptr and owner_->executeManualAction(upgrade_cost))
         {
+=======
+        if (owner_ != nullptr && owner_->executeManualAction(upgrade_cost)) {
+>>>>>>> Stashed changes
             level_ = next_level;
             stats_ = next_stats;
             return true;

@@ -22,8 +22,8 @@ enum class TransportType {
 
 struct CityData {
     CityType type;
-    double min_ENGdemand;
-    double max_ENGdemand;
+    double min_Energy;
+    double max_Energy;
     double Elec_Charge; 
 };
 

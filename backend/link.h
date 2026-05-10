@@ -12,18 +12,12 @@ public:
     const Node& GetNodeB() const;
     float GetDistance() const;
 
-    // Earnings calculation based on connected buildings
-    float CalculateEarnings() const;
-
 private:
     const Node& node_a_;
     const Node& node_b_;
     float distance_;
+    Item item;
 };
-
-
-
-
 
 
 class LinkManager {

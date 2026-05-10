@@ -2,7 +2,7 @@
 #include <algorithm>
 
 Link::Link(const Node& node_a, const Node& node_b)
-    : node_a_(node_a), node_b_(node_b), distance_(Node::GetDistance(node_a, node_b)) {}
+    : node_a_(node_a), node_b_(node_b), distance_(Node::GetDistanceN(node_a, node_b)) {}
 
 const Node& Link::GetNodeA() const {
     return node_a_;
@@ -14,33 +14,6 @@ const Node& Link::GetNodeB() const {
 
 float Link::GetDistance() const {
     return distance_;
-}
-
-float Link::CalculateEarnings() const {
-    BuildingType buildingA = node_a_.GetBuilding();
-    BuildingType buildingB = node_b_.GetBuilding();
-
-    // Simple earnings calculation - can be expanded based on game rules
-    float earnings = 0.0f;
-
-    // Power plant connected to city generates energy
-    if ((buildingA == BuildingType::PowerPlant && node_b_.GetType() == NodeType::City) ||
-        (buildingB == BuildingType::PowerPlant && node_a_.GetType() == NodeType::City)) {
-        earnings += 10.0f; // base energy generation
-    }
-
-    // Resource plant connected to resource node generates resources
-    if ((buildingA == BuildingType::ResourcePlant && node_b_.GetType() == NodeType::Resource) ||
-        (buildingB == BuildingType::ResourcePlant && node_a_.GetType() == NodeType::Resource)) {
-        earnings += 5.0f; // base resource generation
-    }
-
-    // Distance penalty - longer links are less efficient
-    if (distance_ > 100.0f) {
-        earnings *= 0.8f;
-    }
-
-    return earnings;
 }
 
 void LinkManager::AddLink(const Node& node_a, const Node& node_b) {

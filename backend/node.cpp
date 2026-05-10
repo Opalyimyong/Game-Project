@@ -7,15 +7,16 @@ float GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB) {
     return Node::GetDistanceP(poseA, poseB);
 }
 
-NodePassiveGain PowerPlantNode::getPassiveGainType() const {
-    if (solar_index_ > wind_index_ && solar_index_ > 0) {
-        return NodePassiveGain::solar;
-    } else if (wind_index_ > solar_index_ && wind_index_ > 0) {
-        return NodePassiveGain::wind;
-    } else if (has_water_) {
-        return NodePassiveGain::water;
-    } else {
-        
-        return NodePassiveGain::none;
+void CityNode::newContract(Player* player, float amount) {
+    CityContract contract{player, amount};
+    contracts_.push_back(contract);
+}
+
+ void PowerPlantNode::checkFactoryType() const {
+    if (HasBuilding()) {
+        Building* building = GetBuilding();
+        if (building->getItem().type == TransportType::Resource) {
+          
+          
     }
 }
