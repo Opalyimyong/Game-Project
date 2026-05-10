@@ -75,6 +75,8 @@ public:
     // Getter
     PlantType getType() const { return type_; }
     Item getResourceInput() const { return resource_input_; }
+    SourceType getSourceType() const { return source_type_; }
+    PassiveType getPassiveType() const { return passive_type_; }
 
     // Setter
     bool addResourceInput(Item input); // input resource from outter
