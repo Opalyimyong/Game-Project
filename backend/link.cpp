@@ -16,6 +16,25 @@ float Link::GetDistance() const {
     return distance_;
 }
 
+LinkPreview LinkManager::PreviewLink(const Node& node_a, const Node& node_b) {
+    LinkPreview preview;
+    preview.node_a = &node_a;
+    preview.node_b = &node_b;
+    preview.distance = Node::GetDistanceN(node_a, node_b);
+    preview.is_valid = true; // Add your validation logic here
+    preview.preview_info = ""; // Add your calculation logic here
+    
+    return preview;
+}
+
+void LinkManager::ConfirmAndAddLink(const Node& node_a, const Node& node_b) {
+    LinkPreview preview = PreviewLink(node_a, node_b);
+    
+    if (preview.is_valid) {
+        AddLink(node_a, node_b);
+    }
+}
+
 void LinkManager::AddLink(const Node& node_a, const Node& node_b) {
     links_.emplace_back(node_a, node_b);
 }

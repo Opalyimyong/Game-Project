@@ -1,5 +1,5 @@
 #include "node.h"
-#include "building.h"
+
 Node::Node(float x, float y, NodeType type)
     : pose_{x, y}, type_(type), building_(nullptr) {}
 
@@ -19,12 +19,8 @@ void PowerPlantNode::checkFactoryType() {
             if (powerPlant->getType() == PlantType::SolarPlant
             || powerPlant->getType() == PlantType::WindPlant
             || powerPlant->getType() == PlantType::HydroPlant
-        ) {
-                source_type_ = SourceType::Passive;
-        } 
-        else {
-                source_type_ = SourceType::Resource_Based;
-            }
+        ) { source_type_ = SourceType::Passive;} 
+        else { source_type_ = SourceType::Resource_Based;}
         }
     }
 }
