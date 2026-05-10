@@ -51,6 +51,11 @@ struct PowerPlantStats {
     double waste_mult;
 };
 
+struct Item { //Item sending type For communicate Link & Building
+    TransportType type;
+    double amount;
+};
+
 struct CityContract {
     Player* player;
     float amount_recieved;
