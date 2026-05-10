@@ -11,7 +11,7 @@ protected:
     int id_;
     bool is_active_;
     int level_;
-    Player* owner_;
+    Player* owner_; //prt to class Player for using function in Player
     std::vector<int> location_node_;
     Item item_; //for send to node and link
     double waste_output_ = 0.0; //waste output per turn
@@ -30,7 +30,7 @@ public:
     virtual Item getItem() const = 0; //override for resource and energy >> Send This to Node and Link
 
     // Setter
-    bool toggleStatus(bool status); //in case player off plant and want to turn again
+    bool toggleStatus(bool status); //in case player off plant and want to turn on again
     virtual bool upgrade() = 0; //need to overide
     virtual void processWaste() = 0; //add waste output to building's waste
     virtual bool process() = 0; //need to overide

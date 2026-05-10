@@ -10,7 +10,7 @@ class Player {
         double coins_; //unit = kCoins
         int AP_; // Action Point 3 points per turn
         double waste_; // > 100
-        std::vector<Building*> buildings_;
+        std::vector<Building*> buildings_; //collection of building that player have
         std::string whileError_ = "";
     public:
         // Constructor & Destructor

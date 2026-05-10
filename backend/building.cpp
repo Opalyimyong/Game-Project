@@ -68,7 +68,7 @@ bool PowerPlant::upgrade() {
     if (level_ < 3) {
         int next_level = level_ + 1;
         PowerPlantStats next_stats = GameData::GetPowerPlantStats(type_, next_level);
-        double upgrade_cost = next_stats.build_cost - stats_.build_cost;
+        double upgrade_cost = next_stats.build_cost;
         if (owner_ != nullptr and owner_->executeManualAction(upgrade_cost)) {
             level_ = next_level;
             stats_ = next_stats;
