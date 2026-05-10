@@ -15,7 +15,7 @@ void CityNode::newContract(Player* player, float amount) {
  void PowerPlantNode::checkFactoryType() const {
     if (HasBuilding()) {
         Building* building = GetBuilding();
-        if (building->getSourceType() == SourceType::Passive) {
+        if (building->getType() == PlantType:: SolarPlant) {
    
           
           
