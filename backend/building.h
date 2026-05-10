@@ -81,7 +81,7 @@ public:
     PassiveType getPassiveType() const { return passive_type_; }
 
     // Setter
-    bool addResourceInput(Item input); // input resource from outter
+    bool addResourceInput(Item input); // input resource from outside or passive environmental input
     void clearResourceInput();         // at end of process
 
     bool upgrade() override;      // Check Coin >> Upgrade Level >> Pay Coin
