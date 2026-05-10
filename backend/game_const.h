@@ -51,8 +51,7 @@ struct PowerPlantStats {
     double waste_mult;
 };
 
-struct CityContract { //WHAT IS THIS!!
-    int player_id;
-    double amount_reserved;
-    double amount_sended;
+struct CityContract {
+    Player* player;
+    float amount_recieved;
 };
