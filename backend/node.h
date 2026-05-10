@@ -11,15 +11,6 @@ enum class NodeType {
     Power,
     Resource
 };
-enum class PassiveType {
-    Solar,
-    Wind,
-    Water
-};
-enum class SourceType {
-    Passive,
-    Resource_Based
-};
 
 struct NodePose {
     float x;

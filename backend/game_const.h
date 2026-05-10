@@ -58,6 +58,16 @@ struct Item { //Item sending type For communicate Link & Building
     double amount;
 };
 
+enum class PassiveType {
+    Solar,
+    Wind,
+    Water
+};
+enum class SourceType {
+    Passive,
+    Resource_Based
+};
+
 struct CityContract {
     Player* player;
     float amount_recieved;
