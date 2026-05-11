@@ -7,9 +7,9 @@ class Building;
 class Player {
     private:
         std::string id_;
-        double coins_; //unit = kCoins
+        float coins_; //unit = kCoins
         int AP_; // Action Point 3 points per turn
-        double waste_; // > 100
+        float waste_; // > 100
         std::vector<Building*> buildings_; //collection of building that player have
         std::string whileError_ = "";
     public:
@@ -19,20 +19,20 @@ class Player {
 
         // Getter
         const std::string& getId() const { return id_; }
-        double getCoins() const { return coins_; }
+        float getCoins() const { return coins_; }
         int getActionPoints() const { return AP_; }
-        double getTotalWaste() const { return waste_; }
+        float getTotalWaste() const { return waste_; }
 
         // Setter
-        bool executeManualAction(double cost); //Use Action + Use Coin
-        bool payAutoRunCost(double cost); //Subscription
-        void addCoins(double amount);
-        void addWaste(double amount);
-        bool disposeWaste(double amount); //check money >> delete waste >> executeAction
-        double getEfficiencyModifier() const;
+        bool executeManualAction(float cost); //Use Action + Use Coin
+        bool payAutoRunCost(float cost); //Subscription
+        void addCoins(float amount);
+        void addWaste(float amount);
+        bool disposeWaste(float amount); //check money >> delete waste >> executeAction
+        float getEfficiencyModifier() const;
         void resetActionPoints();
         void registerBuilding(Building* building);  //add building to vec buildings_
-        double calculateAssetValue() const; //cal all value
+        float calculateAssetValue() const; //cal all value
         bool isBankrupt() const;
         bool isGameOver() const;
 };

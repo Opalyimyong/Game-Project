@@ -28,40 +28,40 @@ enum class TransportType {
 
 struct CityData {
     CityType type;
-    double min_Energy;
-    double max_Energy;
-    double Elec_Charge; 
+    float min_Energy;
+    float max_Energy;
+    float Elec_Charge; 
 };
 
 struct ResourcePlantStats {
     ResourceType type;
-    double build_cost;
-    double maintenance_cost;
-    double product_per_turn;
+    float build_cost;
+    float maintenance_cost;
+    float product_per_turn;
     int purity_level;
-    double waste_output;
-    double explore_cost;
+    float waste_output;
+    float explore_cost;
 };
 
 struct PowerPlantStats {
     PlantType type;
     int level;
-    double build_cost;
-    double maintenance_cost;
+    float build_cost;
+    float maintenance_cost;
 
     //Eff Multiplier
-    double eff_mult;
+    float eff_mult;
 
-    double min_input;
-    double max_input;
+    float min_input;
+    float max_input;
 
     //Waste Multiplier
-    double waste_mult;
+    float waste_mult;
 };
 
 struct Item { //Item sending type For communicate Link & Building
     TransportType type;
-    double amount;
+    float amount;
 };
 
 struct CityContract {

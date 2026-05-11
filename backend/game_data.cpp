@@ -386,13 +386,13 @@ namespace GameData
     }
 
     // Create City Data for Add in Node
-    CityData CreateCityData(CityType type, double min, double max, double charge)
+    CityData CreateCityData(CityType type, float min, float max, float charge)
     {
         return {type, min, max, charge};
     }
 
     // Send Rate of Calculate Shipping Cost
-    double GetTranportRate(TransportType item)
+    float GetTranportRate(TransportType item)
     {
         switch (item)
         {

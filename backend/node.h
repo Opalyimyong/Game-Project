@@ -13,8 +13,8 @@ enum class NodeType {
 };
 
 struct NodePose {
-    float x;
-    float y;
+    int x;
+    int y;
 
     bool operator==(const NodePose& other) const {
         return x == other.x && y == other.y;
@@ -23,12 +23,12 @@ struct NodePose {
 
 class Node {
 public:
-    Node(float x, float y, NodeType type)
+    Node(int x, int y, NodeType type)
         : pose_{x, y}, type_(type), building_(nullptr) {}
 
     const NodePose& GetPose() const { return pose_; }
-    float GetX() const { return pose_.x; }
-    float GetY() const { return pose_.y; }
+    int GetX() const { return pose_.x; }
+    int GetY() const { return pose_.y; }
     NodeType GetType() const { return type_; }
     Building* GetBuilding() const { return building_.get(); }
     bool HasBuilding() const { return building_ != nullptr; }

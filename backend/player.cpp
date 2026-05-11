@@ -4,14 +4,14 @@
 #include <iostream>
 
 Player::Player(const std::string& id)
-: id_(id), coins_(500), AP_(3), waste_(0), buildings_({}) {}
+: id_(id), coins_(500.0f), AP_(3), waste_(0.0f), buildings_({}) {}
 
-bool Player::executeManualAction(double cost) {
+bool Player::executeManualAction(float cost) {
     if (AP_ < 1) {
         whileError_ = "Your Action Point Not Enought";
         return false;
     }
-    if (coins_ - cost < 0) {
+    if (coins_ - cost < 0.0f) {
         whileError_ = "Your Coin Not Enought";
         return false;
     }
@@ -22,9 +22,9 @@ bool Player::executeManualAction(double cost) {
     return true;
 }
 
-bool Player::payAutoRunCost(double cost)
+bool Player::payAutoRunCost(float cost)
 {
-    if (coins_ - cost < 0) {
+    if (coins_ - cost < 0.0f) {
         whileError_ = "Your Coin Not Enought";
         return false;
     }
@@ -34,48 +34,48 @@ bool Player::payAutoRunCost(double cost)
     return true;
 }
 
-void Player::addCoins(double amount) { coins_ += amount; }
+void Player::addCoins(float amount) { coins_ += amount; }
 
-void Player::addWaste(double amount) { waste_ += amount; }
+void Player::addWaste(float amount) { waste_ += amount; }
 
-bool Player::disposeWaste(double amount)
+bool Player::disposeWaste(float amount)
 {
-    if (coins_ - (amount * 3) < 0) {
+    if (coins_ - (amount * 3.0f) < 0.0f) {
         whileError_ = "Your Coin Not Enought";
         return false;
     }
 
     //Action
     AP_ -= 1;
-    coins_ -= (amount * 3);
+    coins_ -= (amount * 3.0f);
     return true;
 }
 
-double Player::getEfficiencyModifier() const
+float Player::getEfficiencyModifier() const
 {
-    if (waste_ >= 80) {
-        return 0.8;
+    if (waste_ >= 80.0f) {
+        return 0.8f;
     }
-    return 0.0;
+    return 0.0f;
 }
 
 void Player::resetActionPoints() { AP_ = 3; }
 
 void Player::registerBuilding(Building* building) { buildings_.push_back(building); }
 
-double Player::calculateAssetValue() const
+float Player::calculateAssetValue() const
 {
     return 0; // COME BACK
 }
 
 bool Player::isBankrupt() const
 {
-    if (coins_ < 0.0) { return true; }
+    if (coins_ < 0.0f) { return true; }
     return false;
 }
 
 bool Player::isGameOver() const
 {
-    {if (isBankrupt() || waste_ >= 100) { return true; }}
+    {if (isBankrupt() || waste_ >= 100.0f) { return true; }}
     return false;
 }

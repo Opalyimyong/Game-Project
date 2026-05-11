@@ -1,6 +1,6 @@
 #include "node.h"
 
-Node::Node(float x, float y, NodeType type)
+Node::Node(int x, int y, NodeType type)
     : pose_{x, y}, type_(type), building_(nullptr) {}
 
 float GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB) {
