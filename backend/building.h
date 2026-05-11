@@ -75,7 +75,6 @@ private:
     Item resource_input_;
     PowerPlantStats stats_;
     SourceType source_type_;
-    PassiveType passive_type_ = PassiveType::None;
 
 public:
     // Contructor & Destructor
@@ -85,7 +84,6 @@ public:
     PlantType getType() const { return type_; }
     Item getResourceInput() const { return resource_input_; }
     SourceType getSourceType() const override { return source_type_; }
-    PassiveType getPassiveType() const { return passive_type_; }
 
     // Setter
     bool addResourceInput(Item input); // input resource from outside or passive environmental input

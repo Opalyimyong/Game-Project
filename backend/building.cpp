@@ -74,15 +74,12 @@ PowerPlant::PowerPlant(const int &id, Player *owner, const std::vector<int> loca
         break;
     case PlantType::SolarPlant:
         source_type_ = SourceType::Passive;
-        passive_type_ = PassiveType::Solar;
         break;
     case PlantType::WindPlant:
         source_type_ = SourceType::Passive;
-        passive_type_ = PassiveType::Wind;
         break;
     case PlantType::HydroPlant:
         source_type_ = SourceType::Passive;
-        passive_type_ = PassiveType::Water;
         break;
     case PlantType::NuclearPlant:
         source_type_ = SourceType::Resource_Based;
