@@ -14,7 +14,7 @@ bool Building::toggleStatus(bool status)
     }
     if ((is_active_ == false) && (status == true))
     {
-        if ((owner_ != nullptr) && (owner_->executeManualAction(0.0f)))
+        if ((owner_ != nullptr) && (owner_->executeManualAction(0.0)))
         {
             is_active_ = true;
             return true;
@@ -25,7 +25,7 @@ bool Building::toggleStatus(bool status)
 
 // ResourcePlant Class
 ResourcePlant::ResourcePlant(const int &id, Player *owner, const std::vector<int> location_node, ResourceType type, int purity_level)
-    : Building(id, BuildingType::ResourcePlant, owner, location_node, {TransportType::Resource, 0.0f}), type_(type), purity_level_(purity_level)
+    : Building(id, BuildingType::ResourcePlant, owner, location_node, {TransportType::Resource, 0.0}), type_(type), purity_level_(purity_level)
 {
     level_ = purity_level_;
     stats_ = GameData::GetResourcePlantStats(type, level_);
@@ -35,7 +35,7 @@ bool ResourcePlant::upgrade() { return false; } // Resource Plant cannot upgrade
 
 void ResourcePlant::processWaste()
 {
-    float waste = stats_.waste_output;
+    double waste = stats_.waste_output;
     waste_output_ = waste; // per turn waste output
 }
 
@@ -48,7 +48,7 @@ bool ResourcePlant::process()
 
 int ResourcePlant::getCurrentValue() const
 { // 70% of Build Cost
-    return static_cast<int>(stats_.build_cost * 70.0f / 100.0f);
+    return static_cast<int>(stats_.build_cost * 70.0 / 100.0);
 }
 
 SourceType ResourcePlant::getSourceType() const
@@ -58,7 +58,7 @@ SourceType ResourcePlant::getSourceType() const
 
 // PowerPlant Class
 PowerPlant::PowerPlant(const int &id, Player *owner, const std::vector<int> location_node, PlantType type)
-    : Building(id, BuildingType::PowerPlant, owner, location_node, {TransportType::Energy, 0.0f}), type_(type)
+    : Building(id, BuildingType::PowerPlant, owner, location_node, {TransportType::Energy, 0.0}), type_(type)
 {
     stats_ = GameData::GetPowerPlantStats(type, level_);
     switch (type_)
