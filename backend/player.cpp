@@ -1,7 +1,13 @@
+<<<<<<< Updated upstream
 // #include "player.h"
 // #include "building.h"
 
 // #include <iostream>
+=======
+#include "player.h"
+#include "building.h"
+#include <iostream>
+>>>>>>> Stashed changes
 
 // Player::Player(const std::string& id)
 // : id_(id), coins_(500.0f), AP_(3), waste_(0.0f), buildings_({}) {}
