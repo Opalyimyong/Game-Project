@@ -1,70 +1,91 @@
 #pragma once
 
-//Base Data
+// Base Data
 
 class Player;
 
-enum class SourceType {
+enum class SourceType
+{
     Resource_Based,
     Passive,
     None
 };
 
-enum class ResourceType {
-    Coal, Gas, Biomass, Uranium
+enum class ResourceType
+{
+    Coal,
+    Gas,
+    Biomass,
+    Uranium
 };
 
-enum class PlantType {
-    CoalPlant, GasPlant, BiomassPlant, SolarPlant, WindPlant, HydroPlant, NuclearPlant
+enum class PlantType
+{
+    CoalPlant,
+    GasPlant,
+    BiomassPlant,
+    SolarPlant,
+    WindPlant,
+    HydroPlant,
+    NuclearPlant
 };
 
-enum class CityType {
-    Small, Big
+enum class CityType
+{
+    Small,
+    Big
 };
 
-enum class TransportType {
-    Resource, Energy
+enum class TransportType
+{
+    Resource,
+    Energy
 };
 
-struct CityData {
+struct CityData
+{
     CityType type;
-    float min_Energy;
-    float max_Energy;
-    float Elec_Charge; 
+    double min_Energy;
+    double max_Energy;
+    double Elec_Charge;
 };
 
-struct ResourcePlantStats {
+struct ResourcePlantStats
+{
     ResourceType type;
-    float build_cost;
-    float maintenance_cost;
-    float product_per_turn;
+    double build_cost;
+    double maintenance_cost;
+    double product_per_turn;
     int purity_level;
-    float waste_output;
-    float explore_cost;
+    double waste_output;
+    double explore_cost;
 };
 
-struct PowerPlantStats {
+struct PowerPlantStats
+{
     PlantType type;
     int level;
-    float build_cost;
-    float maintenance_cost;
+    double build_cost;
+    double maintenance_cost;
 
-    //Eff Multiplier
-    float eff_mult;
+    // Eff Multiplier
+    double eff_mult;
 
-    float min_input;
-    float max_input;
+    double min_input;
+    double max_input;
 
-    //Waste Multiplier
-    float waste_mult;
+    // Waste Multiplier
+    double waste_mult;
 };
 
-struct Item { //Item sending type For communicate Link & Building
+struct Item
+{ // Item sending type For communicate Link & Building
     TransportType type;
-    float amount;
+    double amount;
 };
 
-struct CityContract {
-    Player* player;
-    float amount_recieved;
+struct CityContract
+{
+    Player *player;
+    double amount_recieved;
 };

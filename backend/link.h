@@ -5,42 +5,46 @@
 #include <optional>
 #include <string>
 
-struct LinkPreview {
-    const Node* node_a;
-    const Node* node_b;
-    float distance;
-    
-    bool is_valid; // whether the link can be created
+struct LinkPreview
+{
+    const Node *node_a;
+    const Node *node_b;
+    double distance;
+
+    bool is_valid;            // whether the link can be created
     std::string preview_info; // description of what would happen
 };
 
-class Link {
+class Link
+{
 public:
-    Link(const Node& node_a, const Node& node_b);
+    Link(const Node &node_a, const Node &node_b);
 
-    const Node& GetNodeA() const;
-    const Node& GetNodeB() const;
-    float GetDistance() const;
+    const Node &GetNodeA() const;
+    const Node &GetNodeB() const;
+    double GetDistance() const;
+
+    // double CalShippingCost() const;
 
 private:
-    const Node& node_a_;
-    const Node& node_b_;
-    float distance_;
+    const Node &node_a_;
+    const Node &node_b_;
+    double distance_;
     Item item;
 };
 
-
-class LinkManager {
+class LinkManager
+{
 public:
+    LinkPreview PreviewLink(const Node &node_a, const Node &node_b);
 
-    LinkPreview PreviewLink(const Node& node_a, const Node& node_b);
+    void ConfirmAndAddLink(const Node &node_a, const Node &node_b);
 
-    void ConfirmAndAddLink(const Node& node_a, const Node& node_b);
-    
-    void AddLink(const Node& node_a, const Node& node_b);
-    const std::vector<Link>& GetAllLinks() const;
-    std::vector<Link> GetLinksForNode(const Node& node) const;
-    std::optional<Link> GetLinkBetweenNodes(const Node& node_a, const Node& node_b) const;
+    void AddLink(const Node &node_a, const Node &node_b);
+    const std::vector<Link> &GetAllLinks() const;
+    std::vector<Link> GetLinksForNode(const Node &node) const;
+    std::optional<Link> GetLinkBetweenNodes(const Node &node_a, const Node &node_b) const;
+
 private:
     std::vector<Link> links_;
 };

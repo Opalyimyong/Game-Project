@@ -21,7 +21,7 @@ protected:
     Player *owner_; // prt to class Player for using function in Player
     std::vector<int> location_node_;
     Item item_;                 // Product for send to node and link
-    float waste_output_ = 0.0f; // waste output per turn
+    double waste_output_ = 0.0; // waste output per turn
 public:
     // Contructor & Destructor
     Building(const int &id, BuildingType building_type, Player *owner, const std::vector<int> location_node, Item item);
@@ -34,7 +34,7 @@ public:
     BuildingType getBuildingType() const { return building_type_; }
     Player *getOwner() const { return owner_; }
     const std::vector<int> &getLocationNode() const { return location_node_; }
-    float getWasteOutput() const { return waste_output_; }
+    double getWasteOutput() const { return waste_output_; }
     Item getItem() const { return item_; } // override for resource and energy >> Send This to Node and Link
 
     // Setter
