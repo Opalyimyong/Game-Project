@@ -3,33 +3,26 @@
 Node::Node(int x, int y, NodeType type)
     : pose_{x, y}, type_(type), building_(nullptr) {}
 
-<<<<<<< Updated upstream
-double GetDistanceBetweenPoses(const NodePose &poseA, const NodePose &poseB)
-{
-    return Node::GetDistanceP(poseA, poseB);
-}
-
-void CityNode::newContract(Player *player, double amount)
-{
-=======
 double GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB) {
     return Node::GetDistanceP(poseA, poseB);
 }
 
 void CityNode::newContract(Player* player, double amount) {
->>>>>>> Stashed changes
     CityContract contract{player, amount};
     contracts_.push_back(contract);
 }
 
-void PowerPlantNode::checkFactoryType()
+void PowerPlantNode::checkInputType()
 {
     if (HasBuilding())
     {
         Building *building = GetBuilding();
         if (auto *powerPlant = dynamic_cast<PowerPlant *>(building))
         {
-            if (powerPlant->getType() == PlantType::SolarPlant || powerPlant->getType() == PlantType::WindPlant || powerPlant->getType() == PlantType::HydroPlant)
+            if (
+            powerPlant->getType() == PlantType::SolarPlant || 
+            powerPlant->getType() == PlantType::WindPlant || 
+            powerPlant->getType() == PlantType::HydroPlant)
             {
                 source_type_ = SourceType::Passive;
             }
