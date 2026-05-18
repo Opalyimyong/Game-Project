@@ -3,6 +3,7 @@
 Node::Node(int x, int y, NodeType type)
     : pose_{x, y}, type_(type), building_(nullptr) {}
 
+<<<<<<< Updated upstream
 double GetDistanceBetweenPoses(const NodePose &poseA, const NodePose &poseB)
 {
     return Node::GetDistanceP(poseA, poseB);
@@ -10,6 +11,13 @@ double GetDistanceBetweenPoses(const NodePose &poseA, const NodePose &poseB)
 
 void CityNode::newContract(Player *player, double amount)
 {
+=======
+double GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB) {
+    return Node::GetDistanceP(poseA, poseB);
+}
+
+void CityNode::newContract(Player* player, double amount) {
+>>>>>>> Stashed changes
     CityContract contract{player, amount};
     contracts_.push_back(contract);
 }

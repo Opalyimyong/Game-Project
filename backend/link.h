@@ -5,6 +5,7 @@
 #include <optional>
 #include <string>
 
+<<<<<<< Updated upstream
 struct LinkPreview
 {
     const Node *node_a;
@@ -12,6 +13,14 @@ struct LinkPreview
     double distance;
 
     bool is_valid;            // whether the link can be created
+=======
+struct LinkPreview {
+    const Node* node_a;
+    const Node* node_b;
+    double distance;
+    
+    bool is_valid; // whether the link can be created
+>>>>>>> Stashed changes
     std::string preview_info; // description of what would happen
 };
 
@@ -20,6 +29,7 @@ class Link
 public:
     Link(const Node &node_a, const Node &node_b);
 
+<<<<<<< Updated upstream
     const Node &GetNodeA() const;
     const Node &GetNodeB() const;
     double GetDistance() const;
@@ -29,6 +39,15 @@ public:
 private:
     const Node &node_a_;
     const Node &node_b_;
+=======
+    const Node& GetNodeA() const;
+    const Node& GetNodeB() const;
+    double GetDistance() const;
+
+private:
+    const Node& node_a_;
+    const Node& node_b_;
+>>>>>>> Stashed changes
     double distance_;
     Item item;
 };
@@ -38,6 +57,7 @@ class LinkManager
 public:
     LinkPreview PreviewLink(const Node &node_a, const Node &node_b);
 
+<<<<<<< Updated upstream
     void ConfirmAndAddLink(const Node &node_a, const Node &node_b);
 
     void AddLink(const Node &node_a, const Node &node_b);
@@ -45,6 +65,15 @@ public:
     std::vector<Link> GetLinksForNode(const Node &node) const;
     std::optional<Link> GetLinkBetweenNodes(const Node &node_a, const Node &node_b) const;
 
+=======
+   
+    void ConfirmAndAddLink(const Node& node_a, const Node& node_b);
+    
+    void AddLink(const Node& node_a, const Node& node_b);
+    const std::vector<Link>& GetAllLinks() const;
+    std::vector<Link> GetLinksForNode(const Node& node) const;
+    std::optional<Link> GetLinkBetweenNodes(const Node& node_a, const Node& node_b) const;
+>>>>>>> Stashed changes
 private:
     std::vector<Link> links_;
 };

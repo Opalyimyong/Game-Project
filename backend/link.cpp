@@ -14,6 +14,7 @@ const Node &Link::GetNodeB() const
     return node_b_;
 }
 
+<<<<<<< Updated upstream
 double Link::GetDistance() const
 {
     return distance_;
@@ -40,6 +41,11 @@ void LinkManager::ConfirmAndAddLink(const Node &node_a, const Node &node_b)
         AddLink(node_a, node_b);
     }
 }
+=======
+double Link::GetDistance() const {
+    return distance_;
+};
+>>>>>>> Stashed changes
 
 void LinkManager::AddLink(const Node &node_a, const Node &node_b)
 {
