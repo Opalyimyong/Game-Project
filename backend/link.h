@@ -24,6 +24,8 @@ public:
     const Node &GetNodeB() const;
     double GetDistance() const;
 
+    // double CalShippingCost() const;
+
 private:
     const Node &node_a_;
     const Node &node_b_;
