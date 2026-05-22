@@ -36,7 +36,7 @@ bool ResourcePlant::upgrade() { return false; } // Resource Plant cannot upgrade
 void ResourcePlant::processWaste()
 {
     double waste = stats_.waste_output;
-    waste_output_ = waste; // per turn waste output
+    item_.waste_amount = waste; // per turn waste output
 }
 
 bool ResourcePlant::process()
@@ -121,7 +121,7 @@ bool PowerPlant::upgrade()
 void PowerPlant::processWaste()
 {
     float waste = resource_input_.amount * stats_.waste_mult;
-    waste_output_ = waste; // per turn waste output
+    item_.waste_amount = waste; // per turn waste output
 }
 
 bool PowerPlant::process()

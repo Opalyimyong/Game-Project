@@ -82,6 +82,7 @@ struct Item
 { // Item sending type For communicate Link & Building
     TransportType type;
     double amount;
+    double waste_amount = 0.0; // for energy input, calculate waste output by waste_mult and send this to link to add to node and player
 };
 
 struct CityContract
