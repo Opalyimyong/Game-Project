@@ -38,10 +38,10 @@ public:
     NodeType GetType() const { return type_; }
     Building *GetBuilding() const { return building_.get(); }
     bool HasBuilding() const { return building_ != nullptr; }
-
+    
     //Setter
     virtual void SetBuilding(std::unique_ptr<Building> building) = 0;
-
+    virtual void recieveItem(Item item) {} 
     virtual ~Node() = default;
 
     static double GetDistanceN(const Node& a, const Node& b) {
@@ -99,6 +99,7 @@ class PowerPlantNode : public Node {
         {
             building_ = std::move(building);
         }
+        void recieveItem(Item item) override {itemFromResource_ = item;} //รับ resource input จาก link
 
     private:
         Item itemFromResource_;

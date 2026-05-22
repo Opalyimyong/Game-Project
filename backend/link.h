@@ -26,8 +26,8 @@ private:
 class LinkManager
 {
 public:
-    void AddLink(const Node& node_a, const Node& node_b);
-    void OperateLink(const Node& node_a, const Node& node_b);
+    void AddLink(Node& node_a, Node& node_b);
+    void OperateLink(Node& node_a, Node& node_b);
     const std::vector<Link>& GetAllLinks() const;
     std::vector<Link> GetLinksForNode(const Node& node) const;
     std::optional<Link> GetLinkBetweenNodes(const Node& node_a, const Node& node_b) const;
