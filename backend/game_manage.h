@@ -9,15 +9,13 @@
 
 class GameManager {
 public:
-    GameManager();
-    void update();
-    void addPlayer(Player *player);
-    void addLink(Link *link);
-    std::vector<Player *> getPlayers() const;
-    std::vector<Link *> getLinks() const;
+    GameManager(std::vector<Player*> players);
+    Player* GetCurrentPlayer() const;
+    void NextTurn();
+    
 
 private:
     std::vector<Player *> players_;
-    std::vector<Node *> nodes_;
-    std::vector<Link *> links_;
+    int turn_index_ = 0;
+
 };
