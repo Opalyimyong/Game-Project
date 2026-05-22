@@ -10,9 +10,13 @@
 class GameManager {
 public:
     GameManager(std::vector<Player*> players);
+
+    //Getter
     Player* GetCurrentPlayer() const;
     void NextTurn();
     
+    Player* GetWinner() const;
+
 
 private:
     std::vector<Player *> players_;
