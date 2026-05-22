@@ -27,35 +27,35 @@ struct NodePose
 class Node
 {
 public:
+    //Constructor
     Node(int x, int y, NodeType type)
         : pose_{x, y}, type_(type), building_(nullptr) {}
 
+    //Getter
     const NodePose &GetPose() const { return pose_; }
     int GetX() const { return pose_.x; }
     int GetY() const { return pose_.y; }
     NodeType GetType() const { return type_; }
     Building *GetBuilding() const { return building_.get(); }
     bool HasBuilding() const { return building_ != nullptr; }
-    void SetBuilding(std::unique_ptr<Building> building)
-    {
-        building_ = std::move(building);
-    }
+
+    //Setter
+    virtual void SetBuilding(std::unique_ptr<Building> building) = 0;
 
     virtual ~Node() = default;
 
+    static double GetDistanceN(const Node& a, const Node& b) {
+        return GetDistanceP(a.GetPose(), b.GetPose());
+    }
     static double GetDistanceP(const NodePose& a, const NodePose& b) {
         const double dx = a.x - b.x;
         const double dy = a.y - b.y;
         return std::sqrt(dx * dx + dy * dy);
     }
 
-    static double GetDistanceN(const Node& a, const Node& b) {
-        return GetDistanceP(a.GetPose(), b.GetPose());
-    }
-
 protected:
-    NodePose pose_;
-    NodeType type_;
+    NodePose pose_; //ตำแหน่งของ Node
+    NodeType type_; //City, Power, Resource
     std::unique_ptr<Building> building_;
 };
 
@@ -76,29 +76,37 @@ class CityNode : public Node {
         void newContract(Player* player, double amount); //รับไฟจากใคร เท่าไหร่
         
     private:
-        double energy_now_; //ไฟ้ฟ้าในปัจจุบัน
-        double current_demand_;  //ความต้องการไฟฟ้าปัจจุบัน
-        double electricity_price_;  //ราคาค่าไฟฟ้าต่อหน่วย
-        bool is_powered_; //เมือง active หรือยัง
-        CityData city_data_; //ข้อมูลเมือง
-        std::vector<CityContract> contracts_; //เก็บข้อมูลว่าใครจ่ายอยู่บ้าง และจ่ายเท่าไหร่
+        double energy_now_; //ไฟ้ฟ้าในปัจจุบัน realtime
+        double current_demand_;  //ความต้องการไฟฟ้าปัจจุบัน realtime
+        double electricity_price_;  //ราคาค่าไฟฟ้าต่อหน่วย set ใน map
+        bool is_powered_; //เมือง active หรือยัง realtime
+        CityData city_data_; //ข้อมูลเมือง max, min, now, small, big
+        std::vector<CityContract> contracts_; //who and howmuch he pays
 };
 
 class PowerPlantNode : public Node {
     public:
-        PowerPlantNode(double x, double y) : Node(x, y, NodeType::Power), source_type_(SourceType::None) {} //contructor
+        //contructor
+        PowerPlantNode(double x, double y) : Node(x, y, NodeType::Power), source_type_(SourceType::None) {} 
+        //getter
         double getSolarIndex() const { return solar_index_; } //passive gain จาก solar
         double getWindIndex() const { return wind_index_; } //passive gain จาก wind
         bool hasWater() const { return has_water_; } //มีแหล่งนํ้าหรือไม่
         double getEnvironmentMultiplier(PlantType type) const; 
-        void checkFactoryType(){} 
-        void fetchPlantType(){}
+        void checkInputType(){}
+        void fetchPlantType(){} //get building data
+        void SetBuilding(std::unique_ptr<Building> building) override
+        {
+            building_ = std::move(building);
+        }
+
     private:
-        double solar_index_;
-        double wind_index_;
-        bool has_water_;
-        SourceType source_type_;
-        PlantType plant_type_;
+        Item itemFromResource_;
+        double solar_index_; //set from map
+        double wind_index_; //set from map
+        bool has_water_; //set from map
+        SourceType source_type_; //Resource_Based, Passive, None
+        PlantType plant_type_; //ประเภทของโรงไฟฟ้า from list
 };
 
 class ResourceNode : public Node {
@@ -108,11 +116,17 @@ class ResourceNode : public Node {
         int getPurityLevel() const { return purity_level_; } //ระดับความบริสุทธิ์ของทรัพยากร
         void resourceOwner(Player* player) { owner_ = player; } //กําหนดเจ้าของทรัพยากร
         double getPurityMultiplier() const{}
-        void fetchResourceType(){}
-        
+        void fetchResourceType(){}//get building data
+        //เดี๋ยวต้องทําดึงข้อมูลจาก turn มาใส่ใน owner node ด้วย เพื่อให้รู้ว่าใครเป็นเจ้าของทรัพยากรนี้
+        void SetBuilding(std::unique_ptr<Building> building) override
+        {
+            building_ = std::move(building);
+            bool isPlaced = building_->process();
+            item_ = building_->getItem();
+        }
     private:
-        ResourceType resource_type_;
-        int purity_level_;
-        bool explored_;
-        Player* owner_;
+        Item item_;
+        ResourceType resource_type_; //set from map
+        int purity_level_; //set from map
+        Player* owner_; 
 };
