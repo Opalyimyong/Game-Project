@@ -1,7 +1,10 @@
 // THE OPTIMIZED PAIRING ENGINE
+#include "game_manage.h"
 #include "node.h"
 #include "building.h"
 #include "iostream"
+
+//map
 void SyncBuildingsToNodes(
     std::vector<std::vector<std::unique_ptr<Node>>>& nodeLayer,
     std::vector<std::vector<std::unique_ptr<Building>>>& buildingLayer,
@@ -25,3 +28,31 @@ void SyncBuildingsToNodes(
         }
     }
 }
+
+//End Game Logic
+bool isEndGame() {
+    int active_players = 0;
+    bool all_active_players_unpowered = true;
+
+    for (const auto& player : players_) {
+        if (player == nullptr || player->isBankrupt()) {
+            continue;
+        }
+
+        ++active_players;
+        // if (!player->isAllCityNodesUnpowered()) {
+        //     all_active_players_unpowered = false;
+        // }
+    }
+
+    if (active_players == 0) {
+        return true; // All players are bankrupt, end the game
+    }
+
+    if (active_players == 2 && all_active_players_unpowered) {
+        return true; // Two active players remain and all owned city nodes are unpowered
+    }
+
+    return false; // Game is still running
+}
+

@@ -1,4 +1,5 @@
 #include "node.h"
+#include "game_data.h"
 
 Node::Node(int x, int y, NodeType type)
     : pose_{x, y}, type_(type), building_(nullptr) {}
@@ -86,4 +87,5 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
 void CityNode::setEnergyRange()
 {
     city_data_ = GameData::CreateCityData(city_data_.type);
+    electricity_price_ = city_data_.Elec_Charge;
 }
