@@ -10,11 +10,12 @@
 //parameter for game manage
 std::vector<Player *> players_ = {};
 int turn_index_ = 0;
+std::vector<Node *> all_nodes_ = {};
 
 Player* GetCurrentPlayer();
 void NextTurn();
     
 //End Game Logic
 bool isEndGame();
-bool IsPlayerLoss(const Player* player); //check and delete player from game
+bool IsPlayerLost(const Player* player); //check and delete player from game
 Player* GetWinner();
