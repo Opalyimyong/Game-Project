@@ -38,6 +38,11 @@
 
 # 2. How to Play
 
+## วิธีการเปิดเกม
+
+1. run sever.exe ใน floder backend
+2. run index.html
+
 ## ลำดับการเล่น
 
 1. เปิดเกมแล้วเลือกจำนวนผู้เล่น
@@ -163,3 +168,7 @@ waste = input * waste(%)
 
 ---
 # ขอให้สนุก 😉
+
+
+
+https://youtu.be/mkFYd6upojA
