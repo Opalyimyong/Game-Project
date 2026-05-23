@@ -263,7 +263,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Coal,
                                           .build_cost = 120.0,
                                           .maintenance_cost = 6.0,
-                                          .product_per_turn = 20.0,
+                                          .product_per_turn = 10.0,
                                           .purity_level = purity_level,
                                           .waste_output = 16.0,
                                           .explore_cost = 25.0};
@@ -271,7 +271,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Coal,
                                           .build_cost = 120.0,
                                           .maintenance_cost = 6.0,
-                                          .product_per_turn = 20.0,
+                                          .product_per_turn = 10.0,
                                           .purity_level = purity_level,
                                           .waste_output = 13.0,
                                           .explore_cost = 25.0};
@@ -279,7 +279,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Coal,
                                           .build_cost = 120.0,
                                           .maintenance_cost = 6.0,
-                                          .product_per_turn = 20.0,
+                                          .product_per_turn = 10.0,
                                           .purity_level = purity_level,
                                           .waste_output = 10.0,
                                           .explore_cost = 25.0};
@@ -294,7 +294,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Gas,
                                           .build_cost = 250.0,
                                           .maintenance_cost = 6.0,
-                                          .product_per_turn = 12.0,
+                                          .product_per_turn = 8.0,
                                           .purity_level = purity_level,
                                           .waste_output = 7.2,
                                           .explore_cost = 40.0};
@@ -302,7 +302,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Gas,
                                           .build_cost = 250.0,
                                           .maintenance_cost = 6.0,
-                                          .product_per_turn = 12.0,
+                                          .product_per_turn = 8.0,
                                           .purity_level = purity_level,
                                           .waste_output = 6.0,
                                           .explore_cost = 40.0};
@@ -310,7 +310,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Gas,
                                           .build_cost = 250.0,
                                           .maintenance_cost = 6.0,
-                                          .product_per_turn = 12.0,
+                                          .product_per_turn = 8.0,
                                           .purity_level = purity_level,
                                           .waste_output = 4.8,
                                           .explore_cost = 40.0};
@@ -325,7 +325,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Biomass,
                                           .build_cost = 180.0,
                                           .maintenance_cost = 5.0,
-                                          .product_per_turn = 15.0,
+                                          .product_per_turn = 6.0,
                                           .purity_level = purity_level,
                                           .waste_output = 7.5,
                                           .explore_cost = 50.0};
@@ -333,7 +333,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Biomass,
                                           .build_cost = 180.0,
                                           .maintenance_cost = 5.0,
-                                          .product_per_turn = 15.0,
+                                          .product_per_turn = 6.0,
                                           .purity_level = purity_level,
                                           .waste_output = 6.0,
                                           .explore_cost = 50.0};
@@ -341,7 +341,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Biomass,
                                           .build_cost = 180.0,
                                           .maintenance_cost = 5.0,
-                                          .product_per_turn = 15.0,
+                                          .product_per_turn = 6.0,
                                           .purity_level = purity_level,
                                           .waste_output = 4.5,
                                           .explore_cost = 50.0};
@@ -356,7 +356,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Uranium,
                                           .build_cost = 3000.0,
                                           .maintenance_cost = 8.0,
-                                          .product_per_turn = 4.0,
+                                          .product_per_turn = 8.0,
                                           .purity_level = purity_level,
                                           .waste_output = 3.6,
                                           .explore_cost = 150.0};
@@ -364,7 +364,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Uranium,
                                           .build_cost = 3000.0,
                                           .maintenance_cost = 8.0,
-                                          .product_per_turn = 4.0,
+                                          .product_per_turn = 8.0,
                                           .purity_level = purity_level,
                                           .waste_output = 3.2,
                                           .explore_cost = 150.0};
@@ -372,7 +372,7 @@ namespace GameData
                 return ResourcePlantStats{.type = ResourceType::Uranium,
                                           .build_cost = 3000.0,
                                           .maintenance_cost = 8.0,
-                                          .product_per_turn = 4.0,
+                                          .product_per_turn = 8.0,
                                           .purity_level = purity_level,
                                           .waste_output = 2.8,
                                           .explore_cost = 150.0};
