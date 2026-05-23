@@ -1,18 +1,146 @@
 <!DOCTYPE html>
 <html lang="en">
-
-
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="style.css">
-    <title>Energy Not Included</title>
-</head>
+    <title>50x50 Strategy Grid Engine</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-color: #1e1e24;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            height: 100vh;
+            overflow: hidden; /* Prevents whole-page scrolling */
+        }
 
+        /* Left Side: Massive Game Board Container */
+        #game-container {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            background-color: #151518;
+        }
+
+        /* Prevent anti-aliasing fuzziness on canvas pixel renders */
+        canvas {
+            border: 4px solid #2a2a35;
+            border-radius: 6px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            cursor: crosshair;
+            image-rendering: pixelated;
+        }
+
+        /* Right Side: Control Sidebar */
+        #sidebar {
+            width: 320px;
+            background-color: #2a2a35;
+            padding: 30px 24px;
+            display: flex;
+            flex-direction: column;
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4);
+            border-left: 1px solid #3e3e4f;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            margin-top: 0;
+            margin-bottom: 25px;
+            font-weight: 500;
+            font-size: 1.5rem;
+            border-bottom: 2px solid #3e3e4f;
+            padding-bottom: 10px;
+            color: #ffeb3b;
+        }
+
+        .tool-option {
+            background-color: #20202a;
+            margin-bottom: 12px;
+            padding: 14px 16px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s ease;
+        }
+
+        .tool-option:hover {
+            background-color: #242430;
+            border-color: #555566;
+        }
+
+        /* Highlight wrapper when inner radio option is active */
+        .tool-option:has(input:checked) {
+            border-color: #ffeb3b;
+            background-color: #262633;
+        }
+
+        input[type="radio"] {
+            margin-right: 14px;
+            accent-color: #ffeb3b;
+            transform: scale(1.2);
+            cursor: pointer;
+        }
+
+        label {
+            font-size: 1rem;
+            font-weight: 500;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        #info-panel {
+            margin-top: auto; /* Pushes instructional panel to the bottom of the sidebar */
+            background-color: #1e1e24;
+            padding: 15px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            line-height: 1.4;
+            color: #aaaaaa;
+            border-left: 3px solid #ffeb3b;
+        }
+    </style>
+</head>
 <body>
-    <h1>Hello Team</h1>
+
+    <!-- Left Side: Viewport Workspace -->
+    <div id="game-container">
+        <!-- Enlarged Canvas Real Estate Area -->
+        <canvas id="gameCanvas" width="700" height="700"></canvas>
+    </div>
+
+    <!-- Right Side: Sidebar HUD Dashboard Controls -->
+    <div id="sidebar">
+        <h1>Strategy Engine</h1>
+        
+        <div class="tool-option">
+            <input type="radio" id="mode-node" name="tool" value="node" checked>
+            <label for="mode-node">Place Resource Node 🟡</label>
+        </div>
+        
+        <div class="tool-option">
+            <input type="radio" id="mode-factory" name="tool" value="factory">
+            <label for="mode-factory">Build Factory 🏭</label>
+        </div>
+        
+        <div class="tool-option">
+            <input type="radio" id="mode-blank" name="tool" value="blank">
+            <label for="mode-blank">Clear Space (Blank) 🟩</label>
+        </div>
+
+        <div id="info-panel">
+            <strong>Controls:</strong><br>
+            • <strong>Left-Click:</strong> Place selected item.<br>
+            • <strong>Right-Click & Drag:</strong> Smoothly pan across the 50x50 world grid map.
+        </div>
+    </div>
+
+    <!-- Link your modular JavaScript engine -->
+    <script src="game.js"></script>
 </body>
-<footer>
-    
-</footer>
 </html>

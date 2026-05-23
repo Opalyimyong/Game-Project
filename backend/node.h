@@ -63,7 +63,7 @@ double GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB);
 
 class CityNode : public Node {
     public:
-        CityNode(double x, double y) : Node(x, y, NodeType::City) {} //Contructor
+        CityNode(double x, double y, CityType city_type) : Node(x, y, NodeType::City), city_data_{city_type} {} //Contructor
         double getElectricityPrice() const { return electricity_price_; } //เช็ค rate ค่าไฟ
         double getCurrentDemandTillActive() const { return city_data_.min_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
         double getCurrentDemandTillFullyPowered() const { return city_data_.max_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
@@ -71,7 +71,8 @@ class CityNode : public Node {
         bool isPowered() const { return is_powered_; } //ไฟพอไหม
         bool isFullyPowered() const{ return energy_now_ >= city_data_.max_Energy; }; //max หรือยัง
         CityData getCityData() const { return city_data_; } //เอาข้อมูลเมืองมาใช้
-
+        void recieveItem(Item item) override {
+            energy_now_ += item.amount; if (energy_now_ >= city_data_.min_Energy) { is_powered_ = true; }} //รับไฟจาก link;
         const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
         void newContract(Player* player, double amount); //รับไฟจากใคร เท่าไหร่
         
@@ -95,10 +96,8 @@ class PowerPlantNode : public Node {
         double getEnvironmentMultiplier(PlantType type) const; 
         void checkInputType(){}
         void fetchPlantType(){} //get building data
-        void SetBuilding(std::unique_ptr<Building> building) override
-        {
-            building_ = std::move(building);
-        }
+        void SetBuilding(std::unique_ptr<Building> building) override {}
+        
         void recieveItem(Item item) override {itemFromResource_ = item;} //รับ resource input จาก link
 
     private:

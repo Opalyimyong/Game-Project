@@ -57,3 +57,29 @@ void ResourceNode::fetchResourceType()
         }
     }
 }
+void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
+{
+    building_ = std::move(building);
+    checkInputType();
+    fetchPlantType();
+
+    if(source_type_ == SourceType::Passive)
+    {
+        if (plant_type_ == PlantType::SolarPlant)
+        {
+            
+        }
+        else if (plant_type_ == PlantType::WindPlant)
+        {
+            
+        }
+        else if (plant_type_ == PlantType::HydroPlant)
+        {
+            
+        }
+    }
+    else if (source_type_ == SourceType::Resource_Based)
+    {
+        // รอรับ resource input จาก link แล้วค่อยเช็คว่าทรัพยากรที่ได้รับตรงกับที่โรงไฟฟ้าต้องการไหม
+    }
+}
