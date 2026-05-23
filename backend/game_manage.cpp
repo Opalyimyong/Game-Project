@@ -2,7 +2,8 @@
 #include "game_manage.h"
 #include "node.h"
 #include "building.h"
-#include "iostream"
+#include <iostream>
+#include <algorithm>
 
 
 std::vector<Player *> players_ = {};
@@ -39,30 +40,74 @@ void SyncBuildingsToNodes(
     }
 }
 
-//End Game Logic
-bool isEndGame() {
-    int active_players = 0;
-    bool all_active_players_unpowered = true;
-
-    for (const auto& player : players_) {
-        if (player == nullptr || player->isBankrupt()) {
+/*--------End Game Logic--------*/
+bool IsAllCityNodesPowered() {
+    bool hasCityNode = false;
+    for (const auto& node : all_nodes_) {
+        if (node->GetType() != NodeType::City) {
             continue;
         }
+        hasCityNode = true;
 
-        ++active_players;
-        // if (!player->isAllCityNodesUnpowered()) {
-        //     all_active_players_unpowered = false;
-        // }
+        CityNode* cityNode = dynamic_cast<CityNode*>(node);
+        if (!cityNode->isPowered()) {
+            return false; // At least one city is not powered yet
+        }
     }
+    return hasCityNode; // End game only when every city node is powered
+}
 
-    if (active_players == 0) {
-        return true; // All players are bankrupt, end the game
+Player* GetWinner() {
+    double highestAssetValue = -1.0;
+    Player* winner = nullptr;
+    for (const auto* player : players_) {
+        if (player->calculateAssetValue() > highestAssetValue) {
+            highestAssetValue = player->calculateAssetValue();
+            winner = const_cast<Player*>(player);
+        }
     }
+    return winner; // Return the player with the highest asset value or nullptr if no players exist
+}
 
-    if (active_players == 2 && all_active_players_unpowered) {
-        return true; // Two active players remain and all owned city nodes are unpowered
+bool isEndGame() {
+    if (IsAllCityNodesPowered()) {
+        std::cout << "All city nodes are powered. The game has ended.\n";
+        return true;
     }
+    if (players_.size() <= 1) {
+        std::cout << "Others players are bankrupt. The game has ended.\n"
+                    << "The winner is " << (GetWinner() ? GetWinner()->getId() : "No one") << "\n";
+        return true;
+    }
+    return false;
+}
 
-    return false; // Game is still running
+/*--------Game Logic--------*/
+Player* GetCurrentPlayer() {
+    if (players_.empty()) {
+        return nullptr;
+    }
+    return players_[turn_index_];
+}
+
+void NextTurn() {
+    if (players_.empty()) {
+        return;
+    }
+    if (isEndGame()) {
+        return;
+    }
+    if (GetCurrentPlayer()->getActionPoints() <= 0) {
+        std::cout << "Player " << GetCurrentPlayer()->getId() << " has no action points left. Moving to next player.\n";
+        turn_index_ = (turn_index_ + 1) % players_.size();
+    }
+}
+
+bool isPlayerLost(const Player* player) {
+    if (player->isBankrupt() || player->getTotalWaste() >= 100.0) {
+        std::cout << "Player " << player->getId() << " has lost the game.\n";
+        return true;
+    }
+    return false;
 }
 
