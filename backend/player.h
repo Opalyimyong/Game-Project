@@ -2,9 +2,8 @@
 #include <vector>
 #include <string>
 
-#include "Node.h"
-
 class Building;
+class CityNode;
 
 class Player
 {
@@ -37,7 +36,7 @@ public:
     double getEfficiencyModifier() const;
     void resetActionPoints();
     void registerBuilding(Building *building); // add building to vec buildings_
-    void accessCityNode(CityNode *node); // add node to vec city_nodes_
+    void accessCityNode(CityNode *node);       // add node to vec city_nodes_
     double calculateAssetValue() const;        // cal all value
     bool isBankrupt() const;
     bool isGameOver() const;
