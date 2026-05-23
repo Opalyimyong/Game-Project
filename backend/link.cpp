@@ -82,10 +82,10 @@ void LinkManager::OperateLink(Node &node_a, Node &node_b) //อย่าลื�
                     bool isSent = node_b.GetBuilding()->addResourceInput(node_a.GetBuilding()->getItem());
                     out = node_a.GetBuilding()->getItem();
                     out.type = TransportType::Resource;
-                    node_b.recieveItem(out);
+                    node_b.recieveItem(nullptr, out); //รอใส่ player เข้าไป
                 }
             }
-    
+            
             // Power -> City: send energy amount
             else if (aType == NodeType::Power && bType == NodeType::City)
             {
@@ -94,7 +94,7 @@ void LinkManager::OperateLink(Node &node_a, Node &node_b) //อย่าลื�
                     out = node_a.GetBuilding()->getItem();
                     out.type = TransportType::Energy;
                     out.waste_amount += node_b.GetBuilding()->getItem().waste_amount; //บวก waste ของ powerplant
-                    node_b.recieveItem(out);
+                    node_b.recieveItem(nullptr, out); //รอใส่ player เข้าไป
                 }
             }
             return;

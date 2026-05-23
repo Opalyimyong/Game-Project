@@ -4,6 +4,16 @@
 #include "building.h"
 #include "iostream"
 
+
+std::vector<Player *> players_ = {};
+Player* getCurrentPlayer() {
+    // Implementation for getting the current player
+}
+std::vector<std::vector<
+
+
+
+
 //map
 void SyncBuildingsToNodes(
     std::vector<std::vector<std::unique_ptr<Node>>>& nodeLayer,

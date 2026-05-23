@@ -42,7 +42,7 @@ public:
     
     //Setter
     virtual void SetBuilding(std::unique_ptr<Building> building) = 0;
-    virtual void recieveItem(Item item) {}
+    virtual void recieveItem(Player* player, Item item) {}
     virtual void fetchPlantType() {}
     virtual PlantType getPlantType() {}
 
@@ -75,8 +75,13 @@ class CityNode : public Node {
         bool isPowered() const { return is_powered_; } //ไฟพอไหม
         bool isFullyPowered() const{ return energy_now_ >= city_data_.max_Energy; }; //max หรือยัง
         CityData getCityData() const { return city_data_; } //เอาข้อมูลเมืองมาใช้
-        void recieveItem(Item item) override {
-            energy_now_ += item.amount; if (energy_now_ >= city_data_.min_Energy) { is_powered_ = true; }} //รับไฟจาก link;
+
+        void recieveItem(Player* player, Item item) override {
+            energy_now_ += item.amount; if (energy_now_ >= city_data_.min_Energy) { is_powered_ = true; }
+            newContract(player, item.amount * city_data_.Elec_Charge); 
+            
+        }
+        //รับไฟจาก link;
         const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
         void newContract(Player* player, double amount); //รับไฟจากใคร เท่าไหร่
         void setEnergyRange(){}
@@ -101,9 +106,10 @@ class PowerPlantNode : public Node {
         void checkInputType(){}
         void fetchPlantType() override{} //get building data
         PlantType getPlantType() override { return plant_type_; }
+        
         void SetBuilding(std::unique_ptr<Building> building) override {}
     //get building data
-        void recieveItem(Item item) override {itemFromResource_ = item;} //รับ resource input จาก link
+        void recieveItem(Player* player, Item item) override {itemFromResource_ = item;} //รับ resource input จาก link
 
     private:
         Item itemFromResource_;
