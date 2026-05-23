@@ -171,4 +171,5 @@ waste = input * waste(%)
 
 
 
-https://youtu.be/mkFYd6upojA
+CLIP แก้ไข ที่อัดหน้าจอไม่ติดค่ะ
+https://youtu.be/9DQ3uGvfxt4
