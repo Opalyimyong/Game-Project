@@ -1,8 +1,7 @@
 #include "node.h"
 #include "game_data.h"
 
-Node::Node(int x, int y, NodeType type)
-    : pose_{x, y}, type_(type), building_(nullptr) {}
+// Node Class logic
 
 double GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB) {
     return Node::GetDistanceP(poseA, poseB);

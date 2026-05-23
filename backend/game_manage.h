@@ -8,9 +8,9 @@
 #include "link.h"
 
 //parameter for game manage
-std::vector<Player *> players_ = {};
-int turn_index_ = 0;
-std::vector<Node *> all_nodes_ = {};
+extern std::vector<Player *> players_;
+extern int turn_index_;
+extern std::vector<Node *> all_nodes_;
 
 Player* GetCurrentPlayer();
 void NextTurn();

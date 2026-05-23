@@ -44,7 +44,7 @@ public:
     virtual void SetBuilding(std::unique_ptr<Building> building) = 0;
     virtual void recieveItem(Player* player, Item item) {}
     virtual void fetchPlantType() {}
-    virtual PlantType getPlantType() {}
+    virtual PlantType getPlantType() { return (PlantType)0; }
 
     virtual ~Node() = default;
 
@@ -84,7 +84,7 @@ class CityNode : public Node {
         //รับไฟจาก link;
         const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
         void newContract(Player* player, double amount); //รับไฟจากใคร เท่าไหร่
-        void setEnergyRange(){}
+        void setEnergyRange();
     private:
         double energy_now_; //ไฟ้ฟ้าในปัจจุบัน realtime
         double current_demand_;  //ความต้องการไฟฟ้าปัจจุบัน realtime
@@ -103,11 +103,11 @@ class PowerPlantNode : public Node {
         double getWindIndex() const { return wind_index_; } //passive gain จาก wind
         bool hasWater() const { return has_water_; } //มีแหล่งนํ้าหรือไม่
         double getEnvironmentMultiplier(PlantType type) const; 
-        void checkInputType(){}
-        void fetchPlantType() override{} //get building data
+        void checkInputType();
+        void fetchPlantType() override; //get building data
         PlantType getPlantType() override { return plant_type_; }
         
-        void SetBuilding(std::unique_ptr<Building> building) override {}
+        void SetBuilding(std::unique_ptr<Building> building) override;
     //get building data
         void recieveItem(Player* player, Item item) override {itemFromResource_ = item;} //รับ resource input จาก link
 
@@ -126,10 +126,10 @@ class ResourceNode : public Node {
         ResourceType getResourceType() const { return resource_type_; } //ประเภทของทรัพยากร
         int getPurityLevel() const { return purity_level_; } //ระดับความบริสุทธิ์ของทรัพยากร
         void resourceOwner(Player* player) { owner_ = player; } //กําหนดเจ้าของทรัพยากร
-        double getPurityMultiplier() const{}
-        void fetchResourceType(){}//get building data
+        double getPurityMultiplier() const { return 1.0; }
+        void fetchResourceType(); //get building data
         //เดี๋ยวต้องทําดึงข้อมูลจาก turn มาใส่ใน owner node ด้วย เพื่อให้รู้ว่าใครเป็นเจ้าของทรัพยากรนี้
-        void SetBuilding(std::unique_ptr<Building> building) override {}
+        void SetBuilding(std::unique_ptr<Building> building) override;
     private:
         Item item_;
         ResourceType resource_type_; //set from map

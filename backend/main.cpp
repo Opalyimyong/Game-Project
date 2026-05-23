@@ -28,6 +28,12 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
             // Send a response back to the JavaScript
             std::string response = "{\"status\":\"started\"}";
             mg_ws_send(c, response.c_str(), response.length(), WEBSOCKET_OP_TEXT);
+        } else if (payload.find("\"action\":\"build\"") != std::string::npos) {
+            std::cout << "Player built a structure." << std::endl;
+        } else if (payload.find("\"action\":\"link\"") != std::string::npos) {
+            std::cout << "Player created a link." << std::endl;
+        } else if (payload.find("\"action\":\"end_turn\"") != std::string::npos) {
+            std::cout << "Player ended their turn." << std::endl;
         }
     }
 }

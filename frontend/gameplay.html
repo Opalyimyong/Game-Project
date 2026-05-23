@@ -3,144 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>50x50 Strategy Grid Engine</title>
+    <title>Energy Not Included - Game</title>
     <style>
         body {
             margin: 0;
             padding: 0;
-            background-color: #1e1e24;
+            background-color: #0f0f12;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             height: 100vh;
-            overflow: hidden; /* Prevents whole-page scrolling */
+            overflow: hidden;
         }
 
-        /* Left Side: Massive Game Board Container */
         #game-container {
             flex: 1;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            background-color: #151518;
+            background-color: #1a1a24;
+            overflow: hidden;
         }
 
-        /* Prevent anti-aliasing fuzziness on canvas pixel renders */
         canvas {
-            border: 4px solid #2a2a35;
-            border-radius: 6px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.6);
+            background-color: #242430;
+            border: 4px solid #3a3a4a;
+            border-radius: 8px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.8);
             cursor: crosshair;
-            image-rendering: pixelated;
         }
 
-        /* Right Side: Control Sidebar */
         #sidebar {
-            width: 320px;
-            background-color: #2a2a35;
-            padding: 30px 24px;
+            width: 350px;
+            background-color: #1e1e28;
+            padding: 20px;
             display: flex;
             flex-direction: column;
-            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.4);
+            box-shadow: -5px 0 20px rgba(0, 0, 0, 0.5);
             border-left: 1px solid #3e3e4f;
             box-sizing: border-box;
+            overflow-y: auto;
         }
 
         h1 {
             margin-top: 0;
-            margin-bottom: 25px;
-            font-weight: 500;
-            font-size: 1.5rem;
-            border-bottom: 2px solid #3e3e4f;
-            padding-bottom: 10px;
+            margin-bottom: 20px;
+            font-size: 1.4rem;
+            color: #00ffcc;
+            text-align: center;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .player-status {
+            background: #2a2a3a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .player-status.active {
+            border-color: #00ffcc;
+            box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+        }
+
+        .player-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+
+        .color-indicator {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            border: 2px solid #fff;
+        }
+
+        .player-name {
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .ap-display {
+            font-size: 1rem;
             color: #ffeb3b;
         }
 
+        h2 {
+            font-size: 1.1rem;
+            color: #aaaaaa;
+            margin-bottom: 10px;
+            border-bottom: 1px solid #444;
+            padding-bottom: 5px;
+        }
+
         .tool-option {
-            background-color: #20202a;
-            margin-bottom: 12px;
-            padding: 14px 16px;
+            background-color: #2a2a3a;
+            margin-bottom: 10px;
+            padding: 12px;
             border-radius: 8px;
             display: flex;
             align-items: center;
             cursor: pointer;
             border: 2px solid transparent;
-            transition: all 0.2s ease;
+            transition: all 0.2s;
         }
 
         .tool-option:hover {
-            background-color: #242430;
-            border-color: #555566;
+            background-color: #353545;
         }
 
-        /* Highlight wrapper when inner radio option is active */
         .tool-option:has(input:checked) {
-            border-color: #ffeb3b;
-            background-color: #262633;
+            border-color: #00ffcc;
+            background-color: #2a3a3a;
         }
 
         input[type="radio"] {
-            margin-right: 14px;
-            accent-color: #ffeb3b;
+            margin-right: 12px;
+            accent-color: #00ffcc;
             transform: scale(1.2);
             cursor: pointer;
         }
 
         label {
             font-size: 1rem;
-            font-weight: 500;
             cursor: pointer;
             user-select: none;
+            flex: 1;
+        }
+
+        .end-turn-btn {
+            margin-top: 20px;
+            padding: 15px;
+            background: #ff0044;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .end-turn-btn:hover {
+            background: #ff3366;
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(255, 0, 68, 0.5);
         }
 
         #info-panel {
-            margin-top: auto; /* Pushes instructional panel to the bottom of the sidebar */
-            background-color: #1e1e24;
+            margin-top: 20px;
+            background-color: #15151c;
             padding: 15px;
             border-radius: 6px;
             font-size: 0.85rem;
-            line-height: 1.4;
-            color: #aaaaaa;
-            border-left: 3px solid #ffeb3b;
+            line-height: 1.5;
+            color: #cccccc;
+            border-left: 3px solid #00ffcc;
+        }
+        
+        #players-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
         }
     </style>
 </head>
 <body>
 
-    <!-- Left Side: Viewport Workspace -->
     <div id="game-container">
         <!-- Enlarged Canvas Real Estate Area -->
-        <canvas id="gameCanvas" width="700" height="700"></canvas>
+        <canvas id="gameCanvas" width="800" height="800"></canvas>
     </div>
 
-    <!-- Right Side: Sidebar HUD Dashboard Controls -->
     <div id="sidebar">
-        <h1>Strategy Engine</h1>
+        <h1>Command Center</h1>
+        
+        <div id="players-container">
+            <!-- Player Status generated dynamically -->
+        </div>
+
+        <h2>Actions (Cost: 1 AP)</h2>
         
         <div class="tool-option">
-            <input type="radio" id="mode-node" name="tool" value="node" checked>
-            <label for="mode-node">Place Resource Node 🟡</label>
+            <input type="radio" id="mode-resource" name="tool" value="resource" checked>
+            <label for="mode-resource">Build Resource Plant ⛏️</label>
         </div>
         
         <div class="tool-option">
-            <input type="radio" id="mode-factory" name="tool" value="factory">
-            <label for="mode-factory">Build Factory 🏭</label>
+            <input type="radio" id="mode-power" name="tool" value="power">
+            <label for="mode-power">Build Power Plant ⚡</label>
         </div>
         
         <div class="tool-option">
-            <input type="radio" id="mode-blank" name="tool" value="blank">
-            <label for="mode-blank">Clear Space (Blank) 🟩</label>
+            <input type="radio" id="mode-link" name="tool" value="link">
+            <label for="mode-link">Create Link 🔗</label>
         </div>
+        
+        <div class="tool-option">
+            <input type="radio" id="mode-info" name="tool" value="info">
+            <label for="mode-info">Inspect Node 🔍</label>
+        </div>
+
+        <button class="end-turn-btn" onclick="endTurn()">END TURN</button>
 
         <div id="info-panel">
             <strong>Controls:</strong><br>
-            • <strong>Left-Click:</strong> Place selected item.<br>
-            • <strong>Right-Click & Drag:</strong> Smoothly pan across the 50x50 world grid map.
+            • <strong>Left-Click:</strong> Perform Action.<br>
+            • <strong>Right-Click & Drag:</strong> Pan Map.<br>
+            • <strong>Link Tool:</strong> Click source node, then destination node.<br>
+            <span id="game-message" style="color: #ffeb3b; display: block; margin-top: 10px;">Welcome to Energy Not Included!</span>
         </div>
     </div>
 
-    <!-- Link your modular JavaScript engine -->
+    <!-- Building Selection Modal -->
+    <div id="building-modal" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); align-items: center; justify-content: center; z-index: 1000; flex-direction: column;">
+        <div style="background: #1e1e28; padding: 30px; border-radius: 10px; border: 2px solid #00ffcc; text-align: center; width: 300px;">
+            <h2 id="modal-title" style="color: #00ffcc; margin-top: 0;">Select Plant Type</h2>
+            <select id="subtype-select" style="width: 100%; padding: 10px; margin: 15px 0; background: #2a2a3a; color: white; border: 1px solid #444; border-radius: 5px; font-size: 1rem;">
+                <!-- Options populated by JS -->
+            </select>
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button onclick="confirmBuild()" style="padding: 10px 20px; background: #00ffcc; color: #000; font-weight: bold; border: none; border-radius: 5px; cursor: pointer;">Build</button>
+                <button onclick="cancelBuild()" style="padding: 10px 20px; background: #ff4444; color: #fff; font-weight: bold; border: none; border-radius: 5px; cursor: pointer;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <script src="game.js"></script>
 </body>
 </html>

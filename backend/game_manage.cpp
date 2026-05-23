@@ -7,23 +7,10 @@
 
 
 std::vector<Player *> players_ = {};
-Player* getCurrentPlayer() {
-    // Implementation for getting the current player
-}
+int turn_index_ = 0;
+std::vector<Node *> all_nodes_ = {};
 std::vector<std::vector<std::unique_ptr<Node>>> nodeLayer; // Assuming this is defined and populated elsewhere
 std::vector<std::vector<std::unique_ptr<Building>>> buildingLayer; // Assuming this
-
-int main() {
-    for (const auto& player : players_){    
-        NextTurn();
-    
-        
-
-
-    }
-
-
-}
 
 
 

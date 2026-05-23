@@ -19,13 +19,46 @@ body {
     text-align: center;
 }
 .menu-container h1 {
-    letter-spacing: 5px;
-    color: #ffffff;
-    text-shadow: 0 0 10px #ffffff;
+    font-size: 2.5rem;
+    letter-spacing: 6px;
+    color: #fff;
+    text-shadow: 
+        0 0 5px #fff,
+        0 0 10px #fff,
+        0 0 20px #0ff,
+        0 0 40px #0ff,
+        0 0 80px #0ff;
+    animation: neonPulse 1.5s infinite alternate;
 }
+
 .menu-container h1 .NOT {
-    color: #ff0044;
-    text-shadow: 0 0 10px #ff0044;
+    color: #ff0055;
+    text-shadow: 
+        0 0 5px #fff,
+        0 0 10px #ff0055,
+        0 0 20px #ff0055,
+        0 0 40px #ff0055;
+    animation: flicker 3s infinite alternate;
+}
+
+@keyframes neonPulse {
+    from {
+        text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 20px #0ff, 0 0 40px #0ff, 0 0 80px #0ff;
+    }
+    to {
+        text-shadow: 0 0 2px #fff, 0 0 5px #fff, 0 0 10px #0ff, 0 0 20px #0ff, 0 0 40px #0ff;
+    }
+}
+
+@keyframes flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% {
+        text-shadow: 0 0 5px #fff, 0 0 10px #ff0055, 0 0 20px #ff0055, 0 0 40px #ff0055;
+        opacity: 1;
+    }
+    20%, 24%, 55% {
+        text-shadow: none;
+        opacity: 0.3;
+    }
 }
 
 
