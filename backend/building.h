@@ -74,6 +74,7 @@ public:
     // Getter
     PlantType getType() const { return type_; }
     Item getResourceInput() const { return resource_input_; }
+    double getResourceInputAmount() const { return resource_input_.amount; }
     SourceType getSourceType() const { return source_type_; }
     // Setter
     bool addResourceInput(Item input) override; // input resource from outter

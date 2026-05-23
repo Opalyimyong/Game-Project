@@ -111,7 +111,13 @@ class PowerPlantNode : public Node {
         
         void SetBuilding(std::unique_ptr<Building> building) override;
     //get building data
-        void recieveItem(Player* player, Item item) override {itemFromResource_ = item;} //รับ resource input จาก link
+        void recieveItem(Player* player, Item item) override {
+            itemFromResource_ = item;
+            // Feed the resource into the building so PowerPlant::process() can use it
+            if (building_) {
+                building_->addResourceInput(item);
+            }
+        } //รับ resource input จาก link
 
     private:
         Item itemFromResource_;
