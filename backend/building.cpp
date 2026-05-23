@@ -51,11 +51,6 @@ int ResourcePlant::getCurrentValue() const
     return static_cast<int>(stats_.build_cost * 70.0 / 100.0);
 }
 
-SourceType ResourcePlant::getSourceType() const
-{
-    return SourceType::Resource_Based;
-}
-
 // PowerPlant Class
 PowerPlant::PowerPlant(const int &id, Player *owner, const std::vector<int> location_node, PlantType type)
     : Building(id, BuildingType::PowerPlant, owner, location_node, {TransportType::Energy, 0.0}), type_(type)

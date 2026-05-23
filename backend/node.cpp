@@ -83,3 +83,18 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
         // รอรับ resource input จาก link แล้วค่อยเช็คว่าทรัพยากรที่ได้รับตรงกับที่โรงไฟฟ้าต้องการไหม
     }
 }
+void CityNode::setEnergyRange()
+{
+    if (city_data_.type == CityType::Small)
+    {
+        city_data_.min_Energy = 20.0;
+        city_data_.max_Energy = 50.0;
+        city_data_.Elec_Charge = 1.0;
+    }
+    else if (city_data_.type == CityType::Big)
+    {
+        city_data_.min_Energy = 50.0;
+        city_data_.max_Energy = 120.0;
+        city_data_.Elec_Charge = 1.5;
+    }
+}
