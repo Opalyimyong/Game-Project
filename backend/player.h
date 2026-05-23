@@ -3,6 +3,7 @@
 #include <string>
 
 class Building;
+class Node;
 class CityNode;
 
 class Player
