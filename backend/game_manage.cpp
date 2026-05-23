@@ -14,19 +14,14 @@ std::vector<std::vector<std::unique_ptr<Node>>> nodeLayer; // Assuming this is d
 std::vector<std::vector<std::unique_ptr<Building>>> buildingLayer; // Assuming this
 
 int main() {
-    for (const auto& player : players_){    
+    while (!isEndGame()) {
+        Player* currentPlayer = getCurrentPlayer();
+        // Game logic for the current player's turn
         NextTurn();
-    
-        
-
-
     }
 
 
 }
-
-
-
 
 //map
 void SyncBuildingsToNodes(
