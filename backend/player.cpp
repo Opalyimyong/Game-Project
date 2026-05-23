@@ -75,10 +75,20 @@ double Player::calculateAssetValue() const
 {
     double Cpoint = coins_;
     double Bpoint = 0.0;
-    for (const auto &building : buildings_) { Bpoint += building->getValue(); } //cal all buidling value
+    double Npoint = 0.0;
     
+    for (const auto &building : buildings_) { Bpoint += building->getValue(); } //cal all buidling value
+    for (const auto &node : city_nodes_) {
+        if (node->getCityData().type == CityType::Small) {
+            Npoint += 75.0;
+        }
+        else if (node->getCityData().type == CityType::Big) {
+            Npoint += 150.0;
+        }
+    }
+    double waste_penalty = waste_ * 2.0; // แต่ละหน่วยของขยะจะลดค่าโดยรวมลง 2 หน่วย
 
-    return Cpoint + Bpoint;
+    return Cpoint + Bpoint + Npoint - waste_penalty;
 }
 
 bool Player::isBankrupt() const
@@ -99,4 +109,22 @@ bool Player::isGameOver() const
         }
     }
     return false;
+}
+
+bool Player::isAllCityNodesUnpowered() const
+{
+    if (city_nodes_.empty())
+    {
+        return false;
+    }
+
+    for (const auto &node : city_nodes_)
+    {
+        if (node != nullptr && node->isPowered())
+        {
+            return false;
+        }
+    }
+
+    return true;
 }

@@ -7,22 +7,14 @@
 #include "player.h"
 #include "link.h"
 
-class GameManager {
-public:
-    GameManager(std::vector<Player*> players);
+//parameter for game manage
+std::vector<Player *> players_ = {};
+int turn_index_ = 0;
 
-    //Getter
-    Player* GetCurrentPlayer() const;
-    void NextTurn();
+Player* GetCurrentPlayer();
+void NextTurn();
     
-    //End Game Logic
-    bool EndGame() const;
-    bool IsPlayerBankrupt(const Player* player) const; //check and delete player from game
-    Player* GetWinner() const;
-
-
-private:
-    std::vector<Player *> players_;
-    int turn_index_ = 0;
-
-};
+//End Game Logic
+bool isEndGame();
+bool IsPlayerLoss(const Player* player); //check and delete player from game
+Player* GetWinner();
