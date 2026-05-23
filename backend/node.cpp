@@ -67,15 +67,15 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
     {
         if (plant_type_ == PlantType::SolarPlant)
         {
-            
+            building_->addResourceInput({TransportType::Resource, getSolarIndex()});
         }
         else if (plant_type_ == PlantType::WindPlant)
         {
-            
+            building_->addResourceInput({TransportType::Resource, getWindIndex()});
         }
         else if (plant_type_ == PlantType::HydroPlant)
         {
-            
+            building_->addResourceInput({TransportType::Resource, hasWater() ? 5.0 : 0.0}); // สมมติว่าถ้ามีน้ำก็ได้ 5 หน่วย ถ้าไม่มีน้ำก็ไม่ได้อะไร
         }
     }
     else if (source_type_ == SourceType::Resource_Based)
