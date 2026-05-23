@@ -1,27 +1,21 @@
 #include "link.h"
 #include <algorithm>
 
-Link::Link(const Node &node_a, const Node &node_b)
-    : node_a_(node_a), node_b_(node_b), distance_(Node::GetDistanceN(node_a, node_b)) {}
-    
-const Node &Link::GetNodeA() const
-{
-    return node_a_;
-}
+Link::Link(Node* node_a, Node* node_b, Player* owner) 
+    : node_a_(node_a), node_b_(node_b), owner_(owner), distance_(Node::GetDistanceN(*node_a, *node_b)) {}
 
-const Node &Link::GetNodeB() const
-{
-    return node_b_;
-}
+Node* Link::GetNodeA() const { return node_a_; }
 
-double Link::GetDistance() const {
-    return distance_;
-};
+Node* Link::GetNodeB() const { return node_b_; }
+
+Player* Link::GetOwner() const { return owner_; }
+
+double Link::GetDistance() const { return distance_; };
 
 
 void LinkManager::AddLink(Node &node_a, Node &node_b)
 {
-    links_.emplace_back(node_a, node_b);
+    links_.emplace_back(&node_a, &node_b, nullptr);
     // Compute initial item for the newly created link.
     OperateLink(node_a, node_b);
 }
@@ -33,23 +27,23 @@ const std::vector<Link> &LinkManager::GetAllLinks() const
 
 std::vector<Link> LinkManager::GetLinksForNode(const Node &node) const
 {
-    std::vector<Link> result;
+    std::vector<Link> node_links;
     for (const auto &link : links_)
     {
-        if (&link.GetNodeA() == &node || &link.GetNodeB() == &node)
+        if (link.GetNodeA() == &node || link.GetNodeB() == &node)
         {
-            result.push_back(link);
+            node_links.push_back(link);
         }
     }
-    return result;
+    return node_links;
 }
 
 std::optional<Link> LinkManager::GetLinkBetweenNodes(const Node &node_a, const Node &node_b) const
 {
     for (const auto &link : links_)
     {
-        if ((&link.GetNodeA() == &node_a && &link.GetNodeB() == &node_b) ||
-            (&link.GetNodeA() == &node_b && &link.GetNodeB() == &node_a))
+        if ((link.GetNodeA() == &node_a && link.GetNodeB() == &node_b) ||
+            (link.GetNodeA() == &node_b && link.GetNodeB() == &node_a))
         {
             return link;
         }
@@ -61,8 +55,8 @@ void LinkManager::OperateLink(Node &node_a, Node &node_b) //อย่าลื�
 {
     for (auto &link : links_)
     {
-        if ((&link.GetNodeA() == &node_a && &link.GetNodeB() == &node_b) ||
-            (&link.GetNodeA() == &node_b && &link.GetNodeB() == &node_a))
+        if ((link.GetNodeA() == &node_a && link.GetNodeB() == &node_b) ||
+            (link.GetNodeA() == &node_b && link.GetNodeB() == &node_a))
         {
             Item out{TransportType::Resource, 0.0};
             NodeType aType = node_a.GetType();

@@ -3,8 +3,8 @@
 
 namespace GameData
 { // functiion for getter game's data
-        PowerPlantStats GetPowerPlantStats(PlantType type, int level);
-        ResourcePlantStats GetResourcePlantStats(ResourceType type, int level);
+        PowerPlantStats GetPowerPlantStats(PlantType type);
+        ResourcePlantStats GetResourcePlantStats(ResourceType type);
         CityData CreateCityData(CityType type);
         double GetTranportRate(TransportType item);
 };

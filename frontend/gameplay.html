@@ -137,10 +137,9 @@
             flex: 1;
         }
 
-        .end-turn-btn {
-            margin-top: 20px;
+        .action-btn {
+            margin-top: 15px;
             padding: 15px;
-            background: #ff0044;
             color: white;
             border: none;
             border-radius: 8px;
@@ -150,10 +149,18 @@
             transition: all 0.2s;
         }
 
+        .end-turn-btn { background: #ff0044; }
         .end-turn-btn:hover {
             background: #ff3366;
             transform: scale(1.02);
             box-shadow: 0 0 15px rgba(255, 0, 68, 0.5);
+        }
+
+        .dispose-waste-btn { background: #d35400; }
+        .dispose-waste-btn:hover {
+            background: #e67e22;
+            transform: scale(1.02);
+            box-shadow: 0 0 15px rgba(230, 126, 34, 0.5);
         }
 
         #info-panel {
@@ -210,7 +217,8 @@
             <label for="mode-info">Inspect Node 🔍</label>
         </div>
 
-        <button class="end-turn-btn" onclick="endTurn()">END TURN</button>
+        <button class="action-btn dispose-waste-btn" onclick="disposeWaste()">Dispose Waste 🛢️</button>
+        <button class="action-btn end-turn-btn" onclick="endTurn()">END TURN</button>
 
         <div id="info-panel">
             <strong>Controls:</strong><br>

@@ -1,7 +1,4 @@
 #include "node.h"
-#include "game_data.h"
-
-// Node Class logic
 
 double GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB) {
     return Node::GetDistanceP(poseA, poseB);
@@ -57,6 +54,15 @@ void ResourceNode::fetchResourceType()
         }
     }
 }
+void ResourceNode::SetBuilding(std::unique_ptr<Building> building)
+{
+    if(building_ != nullptr) {
+    building_ = std::move(building);
+    bool isPlaced = building_->process();
+    item_ = building_->getItem();
+    fetchResourceType();
+}
+}
 void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
 {
     if (building_ != nullptr) {
@@ -86,5 +92,4 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
 void CityNode::setEnergyRange()
 {
     city_data_ = GameData::CreateCityData(city_data_.type);
-    electricity_price_ = city_data_.Elec_Charge;
 }

@@ -21,15 +21,15 @@ let camera = { x: 0, y: 0, isDragging: false, startX: 0, startY: 0 };
 
 // Load Players from sessionStorage
 let players = JSON.parse(sessionStorage.getItem("gamePlayers")) || [
-    { id: "p1", name: "Player 1", color: "#ff0044", ap: 3, score: 0, waste: 0, coins: 100 },
-    { id: "p2", name: "Player 2", color: "#0088ff", ap: 3, score: 0, waste: 0, coins: 100 }
+    { id: "p1", name: "Player 1", color: "#ff0044", ap: 3, score: 0, waste: 0, coins: 300 },
+    { id: "p2", name: "Player 2", color: "#0088ff", ap: 3, score: 0, waste: 0, coins: 300 }
 ];
 
 // Ensure existing sessions without score/waste/coins get them initialized
 players.forEach(p => {
     if (typeof p.score === 'undefined') p.score = 0;
     if (typeof p.waste === 'undefined') p.waste = 0;
-    if (typeof p.coins === 'undefined') p.coins = 100;
+    if (typeof p.coins === 'undefined') p.coins = 300;
 });
 
 let currentPlayerIndex = 0;
@@ -139,7 +139,7 @@ function updateHUD() {
                 </div>
                 <div class="ap-display">
                     AP: <strong>${player.ap}</strong> | 
-                    Points: <strong style="color: #ffd700">🪙${player.coins}</strong> | 
+                    Coins: <strong style="color: #ffd700">🪙${player.coins}</strong> | 
                     Waste: <strong style="color: #ff4444">🛢️${player.waste}</strong>
                 </div>
             </div>
@@ -227,20 +227,21 @@ function drawGame() {
                     ctx.lineWidth = 4;
                     ctx.stroke();
                     
-                    // Draw Energy Gauge below the city icon
-                    const gaugeWidth = CELL_SIZE * 0.7;
-                    const gaugeHeight = 6;
-                    const gaugeX = centerX - gaugeWidth / 2;
-                    const gaugeY = centerY + CELL_SIZE / 3 + 2;
+                    // Vertical Energy Gauge on the right side
+                    const gaugeWidth = 6;
+                    const gaugeHeight = CELL_SIZE * 0.6;
+                    const gaugeX = centerX + CELL_SIZE / 2.5 + 2; // Placed just outside the right edge of the circle
+                    const gaugeY = centerY - gaugeHeight / 2;
                     
                     // Gauge Background
                     ctx.fillStyle = "#222";
                     ctx.fillRect(gaugeX, gaugeY, gaugeWidth, gaugeHeight);
                     
-                    // Gauge Fill
+                    // Gauge Fill (bottom-up)
                     const fillRatio = Math.min(node.energy / node.maxEnergy, 1.0);
+                    const fillHeight = gaugeHeight * fillRatio;
                     ctx.fillStyle = node.isPowered ? "#00ffcc" : "#ff9900";
-                    ctx.fillRect(gaugeX, gaugeY, gaugeWidth * fillRatio, gaugeHeight);
+                    ctx.fillRect(gaugeX, gaugeY + gaugeHeight - fillHeight, gaugeWidth, fillHeight);
                     
                     // Gauge Border
                     ctx.strokeStyle = "#111";
@@ -340,6 +341,26 @@ function drawGame() {
 // WebSocket Setup
 const socket = new WebSocket('ws://localhost:18888/');
 socket.onopen = () => console.log("Connected to C++ Backend");
+
+socket.onmessage = (event) => {
+    try {
+        const msg = JSON.parse(event.data);
+        if (msg.action === "game_state") {
+            msg.players.forEach(serverPlayer => {
+                let localPlayer = players.find(p => p.id === serverPlayer.id);
+                if (localPlayer) {
+                    localPlayer.ap = serverPlayer.ap;
+                    localPlayer.coins = serverPlayer.coins;
+                    localPlayer.waste = serverPlayer.waste;
+                }
+            });
+            updateHUD();
+            drawGrid(); // Re-render grid to show updated UI state if necessary
+        }
+    } catch(e) {
+        console.error("Error parsing websocket message:", e);
+    }
+};
 
 function sendActionToBackend(actionData) {
     if (socket.readyState === WebSocket.OPEN) {
@@ -487,8 +508,15 @@ function handleGridClick(row, col) {
                 ownerId: currentPlayer.id,
                 color: currentPlayer.color
             });
-            currentPlayer.ap--;
-            sendActionToBackend({ action: "link", from: selectedNodeForLink, to: {r:row, c:col}, player: currentPlayer.id });
+            
+            let tType = (source.type === 'Resource') ? "Resource" : "Energy";
+            sendActionToBackend({ 
+                  action: "link", 
+                  from: { r: selectedNodeForLink.r, c: selectedNodeForLink.c, type: source.type, subtype: source.subtype }, 
+                  to: { r: row, c: col, type: dest.type, subtype: dest.subtype }, 
+                  player: currentPlayer.id, 
+                  transport_type: tType 
+              });
             
             selectedNodeForLink = null;
             updateHUD();
@@ -503,6 +531,20 @@ function endTurn() {
     updateHUD();
     showMessage(`${players[currentPlayerIndex].name}'s Turn`);
     sendActionToBackend({ action: "end_turn", nextPlayer: players[currentPlayerIndex].id });
+}
+
+function disposeWaste() {
+    const amountStr = prompt("How much waste would you like to dispose? (Cost: 3 Coins per unit, requires 1 AP)");
+    if (!amountStr) return;
+    
+    const amount = parseFloat(amountStr);
+    if (isNaN(amount) || amount <= 0) {
+        alert("Invalid amount.");
+        return;
+    }
+
+    const p = players[currentPlayerIndex];
+    sendActionToBackend({ action: "dispose_waste", amount: amount, player: p.id });
 }
 
 // Modal Logic
@@ -560,14 +602,6 @@ function confirmBuild() {
         ownerId: currentPlayer.id, 
         ownerColor: currentPlayer.color 
     };
-    
-    currentPlayer.ap--;
-    
-    if (pendingBuilding.type === 'ResourcePlant') {
-        currentPlayer.waste += 2;
-    } else {
-        currentPlayer.waste += 5;
-    }
 
     sendActionToBackend({ 
         action: "build", 

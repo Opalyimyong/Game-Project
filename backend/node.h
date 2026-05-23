@@ -84,7 +84,9 @@ class CityNode : public Node {
         //รับไฟจาก link;
         const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
         void newContract(Player* player, double amount); //รับไฟจากใคร เท่าไหร่
+        void clearContracts() { contracts_.clear(); }
         void setEnergyRange();
+        void SetBuilding(std::unique_ptr<Building> building) override {}
     private:
         double energy_now_; //ไฟ้ฟ้าในปัจจุบัน realtime
         double current_demand_;  //ความต้องการไฟฟ้าปัจจุบัน realtime

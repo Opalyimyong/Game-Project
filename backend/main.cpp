@@ -1,43 +1,226 @@
 #include "mongoose.h"
 #include <iostream>
 #include <string>
-void fn(struct mg_connection *c, int ev, void *ev_data) {
-    if (ev == MG_EV_HTTP_MSG) {
-        struct mg_http_message *hm = (struct mg_http_message *) ev_data;
-        
-        // This line fixes the "WS upgrade expected" issue. 
-        // It catches the browser's GET request and upgrades it to a WebSocket.
-        mg_ws_upgrade(c, hm, NULL); 
+#include <sstream>
+#include <cmath>
+#include "game_manage.h"
+#include "building.h"
 
-    } else if (ev == MG_EV_WS_OPEN) {
-        // Helpful for debugging - tells you when the connection is officially stable
-        std::cout << "Client connected successfully!" << std::endl;
-
-    } else if (ev == MG_EV_WS_MSG) {
-        struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
-        
-        // Correct naming: .buf and .len based on {6DACD7B2-715A-4711-95B7-39A0000A4B84}.png
-        std::string payload(wm->data.buf, wm->data.len);
-
-        std::cout << "Received: " << payload << std::endl;
-
-        // Trigger your game logic based on the message content
-        if (payload.find("START_GAME") != std::string::npos) {
-            std::cout << "Initializing game world..." << std::endl;
-            
-            // Send a response back to the JavaScript
-            std::string response = "{\"status\":\"started\"}";
+void broadcastGameState(struct mg_mgr *mgr) {
+    std::stringstream ss;
+    ss << "{\"action\":\"game_state\",\"players\":[";
+    for (size_t i = 0; i < players_.size(); i++) {
+        Player* p = players_[i];
+        ss << "{\"id\":\"" << p->getId() << "\",\"ap\":" << p->getActionPoints() 
+           << ",\"coins\":" << p->getCoins() << ",\"waste\":" << p->getTotalWaste() << "}";
+        if (i < players_.size() - 1) ss << ",";
+    }
+    ss << "]}";
+    
+    std::string response = ss.str();
+    std::cout << "Broadcasting Game State: " << response << std::endl;
+    
+    for (struct mg_connection *c = mgr->conns; c != NULL; c = c->next) {
+        if (c->is_websocket) {
             mg_ws_send(c, response.c_str(), response.length(), WEBSOCKET_OP_TEXT);
-        } else if (payload.find("\"action\":\"build\"") != std::string::npos) {
-            std::cout << "Player built a structure." << std::endl;
-        } else if (payload.find("\"action\":\"link\"") != std::string::npos) {
-            std::cout << "Player created a link." << std::endl;
-        } else if (payload.find("\"action\":\"end_turn\"") != std::string::npos) {
-            std::cout << "Player ended their turn." << std::endl;
         }
     }
 }
 
+void fn(struct mg_connection *c, int ev, void *ev_data) {
+    if (ev == MG_EV_HTTP_MSG) {
+        struct mg_http_message *hm = (struct mg_http_message *) ev_data;
+        mg_ws_upgrade(c, hm, NULL); 
+    } else if (ev == MG_EV_WS_OPEN) {
+        std::cout << "Client connected successfully!" << std::endl;
+        if (players_.empty()) {
+            players_.push_back(new Player("p1"));
+            players_.push_back(new Player("p2"));
+        }
+        // Send the initial authoritative state to the client immediately upon connection
+        broadcastGameState(c->mgr);
+
+    } else if (ev == MG_EV_WS_MSG) {
+        struct mg_ws_message *wm = (struct mg_ws_message *) ev_data;
+        std::string payload(wm->data.buf, wm->data.len);
+        std::cout << "Received: " << payload << std::endl;
+
+        if (payload.find("START_GAME") != std::string::npos) {
+            players_.clear();
+            if (payload.find("\"id\":\"p1\"") != std::string::npos) players_.push_back(new Player("p1"));
+            if (payload.find("\"id\":\"p2\"") != std::string::npos) players_.push_back(new Player("p2"));
+            if (payload.find("\"id\":\"p3\"") != std::string::npos) players_.push_back(new Player("p3"));
+            if (payload.find("\"id\":\"p4\"") != std::string::npos) players_.push_back(new Player("p4"));
+            
+            std::string response = "{\"status\":\"started\"}";
+            mg_ws_send(c, response.c_str(), response.length(), WEBSOCKET_OP_TEXT);
+            broadcastGameState(c->mgr);
+        } else if (payload.find("\"action\":\"build\"") != std::string::npos) {
+            std::string playerId = "p1";
+            if (payload.find("\"player\":\"p2\"") != std::string::npos) playerId = "p2";
+            else if (payload.find("\"player\":\"p3\"") != std::string::npos) playerId = "p3";
+            else if (payload.find("\"player\":\"p4\"") != std::string::npos) playerId = "p4";
+            
+            Player* p = nullptr;
+            for (auto* pl : players_) { if (pl->getId() == playerId) { p = pl; break; } }
+            if (!p && !players_.empty()) p = players_[0];
+            
+            double cost = 0.0;
+            Building* newBuilding = nullptr;
+
+            std::string typeStr = "Power";
+            std::string subtypeStr = "PowerPlant";
+            if (payload.find("\"type\":\"ResourcePlant\"") != std::string::npos) {
+                typeStr = "Resource";
+                ResourceType rt = ResourceType::Coal;
+                if (payload.find("\"subtype\":\"Gas\"") != std::string::npos) { rt = ResourceType::Gas; subtypeStr = "Gas"; }
+                else if (payload.find("\"subtype\":\"Biomass\"") != std::string::npos) { rt = ResourceType::Biomass; subtypeStr = "Biomass"; }
+                else if (payload.find("\"subtype\":\"Uranium\"") != std::string::npos) { rt = ResourceType::Uranium; subtypeStr = "Uranium"; }
+                
+                cost = GameData::GetResourcePlantStats(rt).build_cost;
+                newBuilding = new ResourcePlant(rand(), p, {0,0}, rt, 1);
+            } else if (payload.find("\"type\":\"PowerPlant\"") != std::string::npos) {
+                typeStr = "Power";
+                PlantType pt = PlantType::CoalPlant;
+                if (payload.find("\"subtype\":\"GasPlant\"") != std::string::npos) { pt = PlantType::GasPlant; subtypeStr = "GasPlant"; }
+                else if (payload.find("\"subtype\":\"BiomassPlant\"") != std::string::npos) { pt = PlantType::BiomassPlant; subtypeStr = "BiomassPlant"; }
+                else if (payload.find("\"subtype\":\"SolarPlant\"") != std::string::npos) { pt = PlantType::SolarPlant; subtypeStr = "SolarPlant"; }
+                else if (payload.find("\"subtype\":\"WindPlant\"") != std::string::npos) { pt = PlantType::WindPlant; subtypeStr = "WindPlant"; }
+                else if (payload.find("\"subtype\":\"HydroPlant\"") != std::string::npos) { pt = PlantType::HydroPlant; subtypeStr = "HydroPlant"; }
+                else if (payload.find("\"subtype\":\"NuclearPlant\"") != std::string::npos) { pt = PlantType::NuclearPlant; subtypeStr = "NuclearPlant"; }
+                
+                cost = GameData::GetPowerPlantStats(pt).build_cost;
+                PowerPlant* pp = new PowerPlant(rand(), p, {0,0}, pt);
+                // DO NOT mock input anymore, since we have real Resource nodes!
+                newBuilding = pp;
+            }
+
+            int r = 0, col = 0;
+            size_t r_pos = payload.find("\"r\":");
+            if (r_pos != std::string::npos) r = std::stoi(payload.substr(r_pos + 4));
+            size_t c_pos = payload.find("\"c\":");
+            if (c_pos != std::string::npos) col = std::stoi(payload.substr(c_pos + 4));
+
+            if (p && p->executeManualAction(cost)) {
+                if (newBuilding) {
+                    // Node takes ownership. Do NOT also call registerBuilding
+                    // to avoid a dangling pointer in players_ buildings_ vector.
+                    Node* n = GetOrCreateNode(r, col, typeStr, subtypeStr);
+                    n->SetBuilding(std::unique_ptr<Building>(newBuilding));
+                }
+                std::cout << "Player built structure successfully." << std::endl;
+            } else {
+                std::cout << "Build rejected! Insufficient AP or Coins." << std::endl;
+                if (newBuilding) delete newBuilding;
+            }
+            broadcastGameState(c->mgr);
+
+        } else if (payload.find("\"action\":\"link\"") != std::string::npos) {
+            std::string playerId = "p1";
+            if (payload.find("\"player\":\"p2\"") != std::string::npos) playerId = "p2";
+            else if (payload.find("\"player\":\"p3\"") != std::string::npos) playerId = "p3";
+            else if (payload.find("\"player\":\"p4\"") != std::string::npos) playerId = "p4";
+            
+            Player* p = nullptr;
+            for (auto* pl : players_) { if (pl->getId() == playerId) { p = pl; break; } }
+            if (!p && !players_.empty()) p = players_[0];
+
+            TransportType tType = TransportType::Resource;
+            if (payload.find("\"transport_type\":\"Energy\"") != std::string::npos) {
+                tType = TransportType::Energy;
+            }
+
+            int from_r = 0, from_c = 0, to_r = 0, to_c = 0;
+            std::string from_type = "Resource", from_subtype = "";
+            std::string to_type = "Power", to_subtype = "";
+
+            // Parse "from" object boundaries first, then search within them
+            size_t fr_pos = payload.find("\"from\":");
+            size_t to_start = payload.find("\"to\":");
+            if (fr_pos != std::string::npos && to_start != std::string::npos) {
+                // parse from block (between fr_pos and to_start)
+                std::string from_block = payload.substr(fr_pos, to_start - fr_pos);
+                size_t r_p = from_block.find("\"r\":");
+                if (r_p != std::string::npos) from_r = std::stoi(from_block.substr(r_p + 4));
+                size_t c_p = from_block.find("\"c\":");
+                if (c_p != std::string::npos) from_c = std::stoi(from_block.substr(c_p + 4));
+                size_t t_p = from_block.find("\"type\":\"");
+                if (t_p != std::string::npos) {
+                    size_t t_end = from_block.find("\"", t_p + 8);
+                    from_type = from_block.substr(t_p + 8, t_end - (t_p + 8));
+                }
+                size_t st_p = from_block.find("\"subtype\":\"");
+                if (st_p != std::string::npos) {
+                    size_t st_end = from_block.find("\"", st_p + 11);
+                    from_subtype = from_block.substr(st_p + 11, st_end - (st_p + 11));
+                }
+
+                // parse to block (from to_start to end)
+                size_t player_pos = payload.find(",\"player\":", to_start);
+                std::string to_block = (player_pos != std::string::npos)
+                    ? payload.substr(to_start, player_pos - to_start)
+                    : payload.substr(to_start);
+                size_t r_p2 = to_block.find("\"r\":");
+                if (r_p2 != std::string::npos) to_r = std::stoi(to_block.substr(r_p2 + 4));
+                size_t c_p2 = to_block.find("\"c\":");
+                if (c_p2 != std::string::npos) to_c = std::stoi(to_block.substr(c_p2 + 4));
+                size_t t_p2 = to_block.find("\"type\":\"");
+                if (t_p2 != std::string::npos) {
+                    size_t t_end2 = to_block.find("\"", t_p2 + 8);
+                    to_type = to_block.substr(t_p2 + 8, t_end2 - (t_p2 + 8));
+                }
+                size_t st_p2 = to_block.find("\"subtype\":\"");
+                if (st_p2 != std::string::npos) {
+                    size_t st_end2 = to_block.find("\"", st_p2 + 11);
+                    to_subtype = to_block.substr(st_p2 + 11, st_end2 - (st_p2 + 11));
+                }
+            }
+
+            double distance = std::sqrt(std::pow(from_r - to_r, 2) + std::pow(from_c - to_c, 2));
+            double cost = distance * GameData::GetTranportRate(tType);
+
+            if (p && p->executeManualAction(cost)) {
+                Node* nodeA = GetOrCreateNode(from_r, from_c, from_type, from_subtype);
+                Node* nodeB = GetOrCreateNode(to_r, to_c, to_type, to_subtype);
+                Link* newLink = new Link(nodeA, nodeB, p);
+                all_links_.push_back(newLink);
+                std::cout << "Player created a link from (" << from_r << "," << from_c << ") to (" << to_r << "," << to_c << ") with cost " << cost << std::endl;
+            } else {
+                std::cout << "Link rejected! Insufficient AP or Coins." << std::endl;
+            }
+            broadcastGameState(c->mgr);
+
+        } else if (payload.find("\"action\":\"dispose_waste\"") != std::string::npos) {
+            std::string playerId = "p1";
+            if (payload.find("\"player\":\"p2\"") != std::string::npos) playerId = "p2";
+            else if (payload.find("\"player\":\"p3\"") != std::string::npos) playerId = "p3";
+            else if (payload.find("\"player\":\"p4\"") != std::string::npos) playerId = "p4";
+            
+            Player* p = nullptr;
+            for (auto* pl : players_) { if (pl->getId() == playerId) { p = pl; break; } }
+            if (!p && !players_.empty()) p = players_[0];
+
+            size_t pos = payload.find("\"amount\":");
+            if (pos != std::string::npos && p) {
+                double amount = std::stod(payload.substr(pos + 9));
+                if (p->disposeWaste(amount)) {
+                    std::cout << "Player disposed " << amount << " waste." << std::endl;
+                } else {
+                    std::cout << "Dispose rejected! Insufficient AP or Coins." << std::endl;
+                }
+            }
+            broadcastGameState(c->mgr);
+
+        } else if (payload.find("\"action\":\"end_turn\"") != std::string::npos) {
+            std::cout << "Player ended their turn." << std::endl;
+            if (NextTurn()) {
+                std::cout << "--- GLOBAL ROUND ENDED ---" << std::endl;
+                ProcessWorld();
+            }
+            broadcastGameState(c->mgr);
+        }
+    }
+}
 
 int main() {
 struct mg_mgr mgr;

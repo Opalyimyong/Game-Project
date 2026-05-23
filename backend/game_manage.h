@@ -11,9 +11,13 @@
 extern std::vector<Player *> players_;
 extern int turn_index_;
 extern std::vector<Node *> all_nodes_;
+extern std::vector<Link *> all_links_;
 
+Node* GetOrCreateNode(int r, int c, std::string type, std::string subtype);
 Player* GetCurrentPlayer();
-void NextTurn();
+bool NextTurn();
+void ProcessWorld();
+
     
 //End Game Logic
 bool isEndGame();

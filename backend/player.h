@@ -9,7 +9,7 @@ class Player
 {
 private:
     std::string id_;
-    double coins_ = 450;                      // unit = kCoins
+    double coins_ = 300;                      // unit = kCoins
     int AP_ = 3;                            // Action Point 3 points per turn
     double waste_ = 0;                      // > 100
     std::vector<Building *> buildings_; // collection of building that player have
@@ -27,6 +27,7 @@ public:
     double getCoins() const { return coins_; }
     int getActionPoints() const { return AP_; }
     double getTotalWaste() const { return waste_; }
+    const std::vector<Building *>& getBuildings() const { return buildings_; }
 
     // Setter
     bool executeManualAction(double cost); // Use Action + Use Coin

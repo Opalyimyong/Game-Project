@@ -6,7 +6,7 @@
 #include <iostream>
 
 Player::Player(const std::string &id)
-    : id_(id), coins_(500.0), AP_(3), waste_(0.0), buildings_({}) {}
+    : id_(id), coins_(300.0), AP_(3), waste_(0.0), buildings_({}) {}
 
 bool Player::executeManualAction(double cost)
 {
@@ -46,6 +46,11 @@ void Player::addWaste(double amount) { waste_ += amount; }
 
 bool Player::disposeWaste(double amount)
 {
+    if (AP_ < 1)
+    {
+        whileError_ = "Your Action Point Not Enought";
+        return false;
+    }
     if (coins_ - (amount * 3.0) < 0.0)
     {
         whileError_ = "Your Coin Not Enought";
@@ -55,6 +60,10 @@ bool Player::disposeWaste(double amount)
     // Action
     AP_ -= 1;
     coins_ -= (amount * 3.0);
+    waste_ -= amount;
+    if (waste_ < 0) {
+        waste_ = 0.0;
+    }
     return true;
 }
 

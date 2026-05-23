@@ -9,17 +9,18 @@
 class Link
 {
 public:
-    Link(const Node &node_a, const Node &node_b);
+    Link(Node* node_a, Node* node_b, Player* owner);
 
-    const Node& GetNodeA() const;//เช็คได้เฉยๆ
-    const Node& GetNodeB() const;//เช็คได้เฉยๆ
+    Node* GetNodeA() const;
+    Node* GetNodeB() const;
+    Player* GetOwner() const;
     double GetDistance() const;
 
 private:
-    const Node& node_a_;
-    const Node& node_b_;
+    Node* node_a_;
+    Node* node_b_;
+    Player* owner_;
     double distance_;
-
 };
 
 class LinkManager
