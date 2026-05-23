@@ -52,8 +52,8 @@
 
 ป.ล. ข้อที่ 4-6 เป็นแค่ตัวอย่างการออก action ผู้เล่นสามารถออกแบบลำดับ action ของตนเองได้อย่างอิสระ
 
-## Main Actions
-
+>## Main Actions
+>
 >### 1. Create Resource Plant
 >
 >ใช้สร้างโรงงานผลิตทรัพยากรบน **Resource Node**
