@@ -75,6 +75,7 @@ class CityNode : public Node {
             energy_now_ += item.amount; if (energy_now_ >= city_data_.min_Energy) { is_powered_ = true; }} //รับไฟจาก link;
         const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
         void newContract(Player* player, double amount); //รับไฟจากใคร เท่าไหร่
+        void setEnergyRange(); //ปรับช่วงไฟฟ้าตาม level ของเมือง
         
     private:
         double energy_now_; //ไฟ้ฟ้าในปัจจุบัน realtime

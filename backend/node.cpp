@@ -85,16 +85,5 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
 }
 void CityNode::setEnergyRange()
 {
-    if (city_data_.type == CityType::Small)
-    {
-        city_data_.min_Energy = 20.0;
-        city_data_.max_Energy = 50.0;
-        city_data_.Elec_Charge = 1.0;
-    }
-    else if (city_data_.type == CityType::Big)
-    {
-        city_data_.min_Energy = 50.0;
-        city_data_.max_Energy = 120.0;
-        city_data_.Elec_Charge = 1.5;
-    }
+    city_data_ = GameData::CreateCityData(city_data_.type);
 }
