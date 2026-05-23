@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Energy Not Included - Gameplay</title>
+  <link rel="stylesheet" href="gameplay_Style.css" />
+</head>
+<body>
+  <div id="game-container">
+    <canvas id="gameCanvas" width="820" height="820"></canvas>
+  </div>
+
+  <aside id="sidebar">
+    <h1>Energy Grid</h1>
+    <div id="connection">Connecting...</div>
+
+    <section class="panel">
+      <h2>Turn</h2>
+      <div id="turn-panel"></div>
+    </section>
+
+    <section class="panel">
+      <h2>Selected Node</h2>
+      <div id="selected-panel">Click a node on the map.</div>
+    </section>
+
+    <section class="panel">
+      <h2>Build</h2>
+      <label>Resource Plant</label>
+      <select id="resource-type">
+        <option value="Coal">Coal</option>
+        <option value="Gas">Gas</option>
+        <option value="Biomass">Biomass</option>
+        <option value="Uranium">Uranium</option>
+      </select>
+      <button onclick="buildResourcePlant()">Build Resource Plant</button>
+
+      <label>Power Plant</label>
+      <select id="plant-type">
+        <option value="CoalPlant">Coal Plant</option>
+        <option value="GasPlant">Gas Plant</option>
+        <option value="BiomassPlant">Biomass Plant</option>
+        <option value="SolarPlant">Solar Plant</option>
+        <option value="WindPlant">Wind Plant</option>
+        <option value="HydroPlant">Hydro Plant</option>
+        <option value="NuclearPlant">Nuclear Plant</option>
+      </select>
+      <button onclick="buildPowerPlant()">Build Power Plant</button>
+    </section>
+
+    <section class="panel">
+      <h2>Link</h2>
+      <button onclick="setLinkMode()">Select 2 Nodes to Link</button>
+      <button onclick="endTurn()">End Turn / Process</button>
+      <button onclick="newGame()">New Game</button>
+    </section>
+
+    <section class="panel legend">
+      <div><span class="swatch city-small"></span> Small City</div>
+      <div><span class="swatch city-big"></span> Big City</div>
+      <div><span class="swatch power"></span> Power Node</div>
+      <div><span class="swatch resource"></span> Resource Node</div>
+      <p>Controls: left-click select, right-click/shift-drag pan, mouse wheel zoom.</p>
+    </section>
+  </aside>
+
+  <script src="game.js"></script>
+</body>
+</html>

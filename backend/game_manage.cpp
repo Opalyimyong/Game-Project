@@ -7,21 +7,9 @@
 
 
 std::vector<Player *> players_ = {};
-Player* getCurrentPlayer() {
-    // Implementation for getting the current player
-}
+std::vector<std::unique_ptr<Node>> all_nodes_ = {};
 std::vector<std::vector<std::unique_ptr<Node>>> nodeLayer; // Assuming this is defined and populated elsewhere
 std::vector<std::vector<std::unique_ptr<Building>>> buildingLayer; // Assuming this
-
-int main() {
-    while (!isEndGame()) {
-        Player* currentPlayer = getCurrentPlayer();
-        // Game logic for the current player's turn
-        NextTurn();
-    }
-
-
-}
 
 //map
 void SyncBuildingsToNodes(
@@ -120,3 +108,13 @@ bool isPlayerLost(const Player* player) {
     return false;
 }
 
+int main() {
+    while (!isEndGame()) {
+        Player* currentPlayer = GetCurrentPlayer();
+        NextTurn();
+        
+    }
+    GetWinner();
+
+
+}
