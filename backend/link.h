@@ -14,13 +14,12 @@ public:
     const Node& GetNodeA() const;//เช็คได้เฉยๆ
     const Node& GetNodeB() const;//เช็คได้เฉยๆ
     double GetDistance() const;
-    const Item& GetItem() const;
-    void SetItem(const Item& item);
+
 private:
     const Node& node_a_;
     const Node& node_b_;
     double distance_;
-    Item item;
+
 };
 
 class LinkManager

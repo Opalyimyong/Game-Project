@@ -18,13 +18,6 @@ double Link::GetDistance() const {
     return distance_;
 };
 
-const Item& Link::GetItem() const {
-    return item;
-}
-
-void Link::SetItem(const Item& i) {
-    item = i;
-}
 
 void LinkManager::AddLink(Node &node_a, Node &node_b)
 {
@@ -64,7 +57,7 @@ std::optional<Link> LinkManager::GetLinkBetweenNodes(const Node &node_a, const N
     return std::nullopt;
 }
 
-void LinkManager::OperateLink(Node &node_a, Node &node_b)
+void LinkManager::OperateLink(Node &node_a, Node &node_b) //อย่าลืมเช็คว่า user ลําดับ input ถูกไหม
 {
     for (auto &link : links_)
     {
@@ -80,6 +73,12 @@ void LinkManager::OperateLink(Node &node_a, Node &node_b)
             {
                 if (node_a.HasBuilding() && node_b.HasBuilding())
                 {
+                    if (node_a.getPlantType() == PlantType::CoalPlant 
+                    || node_a.getPlantType() == PlantType::GasPlant 
+                    || node_a.getPlantType() == PlantType::BiomassPlant)
+                    {
+                        return; //ถ้าเป็น passive plant จะไม่ส่ง resource ไป ไม่มี item update เข้าไป
+                    }
                     bool isSent = node_b.GetBuilding()->addResourceInput(node_a.GetBuilding()->getItem());
                     out = node_a.GetBuilding()->getItem();
                     out.type = TransportType::Resource;
@@ -94,11 +93,10 @@ void LinkManager::OperateLink(Node &node_a, Node &node_b)
                 { 
                     out = node_a.GetBuilding()->getItem();
                     out.type = TransportType::Energy;
+                    out.waste_amount += node_b.GetBuilding()->getItem().waste_amount; //บวก waste ของ powerplant
                     node_b.recieveItem(out);
                 }
             }
-
-            link.SetItem(out);
             return;
         }
     }
