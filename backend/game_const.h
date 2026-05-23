@@ -60,19 +60,14 @@ struct ResourcePlantStats
 {
     ResourceType type;
     double build_cost;
-    double maintenance_cost;
     double product_per_turn;
-    int purity_level;
     double waste_output;
-    double explore_cost;
 };
 
 struct PowerPlantStats
 {
     PlantType type;
-    int level;
     double build_cost;
-    double maintenance_cost;
 
     // Eff Multiplier
     double eff_mult;
