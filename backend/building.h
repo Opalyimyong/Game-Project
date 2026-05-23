@@ -36,8 +36,6 @@ public:
     double getValue() const { return value_; }
 
     // Setter
-    bool toggleStatus(bool status);          // in case player off plant and want to turn on again
-    virtual bool upgrade() = 0;              // need to overide
     virtual void processWaste() = 0;         // add waste output to building's waste
     virtual bool process() = 0;              // process in plant and add waste output to building's waste
     virtual void setCurrentValue() = 0;     // set current value for calculate asset value of player
@@ -58,7 +56,6 @@ public:
     ResourceType getType() const { return type_; }
 
     // Setter
-    bool upgrade() override;      // resource cannot upgrade
     void processWaste() override; // Process Waste by stats_ >> Add to Building's Waste
     bool process() override;      // Process Resorce & Waste by stats_ >> Add to Storage
     void setCurrentValue() override;
@@ -82,7 +79,6 @@ public:
     bool addResourceInput(Item input) override; // input resource from outter
     void clearResourceInput();         // at end of process
 
-    bool upgrade() override;      // Check Coin >> Upgrade Level >> Pay Coin
     void processWaste() override; // Process Waste by stats_ >> Add to Building's Waste
     bool process() override;      // Process Resorce & Waste by stats_ >> Add to Storage
     void setCurrentValue() override;
