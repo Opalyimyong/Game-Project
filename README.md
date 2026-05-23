@@ -102,15 +102,15 @@
 | ประเภทคะแนน | วิธีคิดคะแนน |
 |---|---|
 | Coins | 1 coin = 1 คะแนน |
-| Power Plant | ได้คะแนนจากมูลค่าโรงไฟฟ้า |
-| Resource Plant | ได้คะแนนจากมูลค่าโรงงานทรัพยากร |
+| Power Plant | ได้คะแนนจาก 75% ของราคาสร้างโรงไฟฟ้า |
+| Resource Plant | ได้คะแนนจาก 70% ของราคาสร้างโรงงานทรัพยากร |
 | Small City | เมืองละ 75 คะแนน |
 | Big City | เมืองละ 150 คะแนน |
 | Waste | 1 waste = -2 คะแนน |
 
 คะแนนรวมคำนวณจาก:
 
-**Coins + Building Value + City Points - Waste Penalty**
+**Coins + Building Value + City Points - Waste**
 
 
 ## Player Tips
@@ -119,7 +119,6 @@
 - เมืองใหญ่ให้คะแนนสูง แต่ต้องใช้พลังงานมากกว่า
 - ควรเชื่อม Resource Node ไปยัง Power Plant ก่อนเชื่อม Power Plant ไปยังเมือง
 - ระวัง Waste เพราะจะถูกหักคะแนนตอนจบเกม
-- การวาง Link ให้เหมาะสมช่วยให้ระบบพลังงานทำงานเร็วขึ้น
 
 
 ## Controls
@@ -135,3 +134,30 @@
 ## End Game
 
 เกมจะจบเมื่อ **ทุกเมืองได้รับไฟฟ้าแล้ว** จากนั้นระบบจะรวมคะแนนของผู้เล่นทุกคน ผู้เล่นที่มีคะแนนรวมสูงที่สุดจะเป็นผู้ชนะของเกม
+
+# 3. Data เพิ่มเติมสำหรับการคำนวณคะแนน และ waste
+
+## Power Plant
+
+| Power Plant Data | EFF (%) | Build Cost (Coin k) | Resource (Type) | Resource (INPUT kg) | Max OUTPUT | Waste (%) |
+| :--- | :---: | :---: | :--- | :---: | :---: | :---: |
+| Coal Plant | 0.8 | 80 | Coal | 10 | 8 | 0.6 |
+| Gas Plant | 1.15 | 140 | Gas | 8 | 9.2 | 0.5 |
+| BiomassPlant | 0.75 | 120 | Biomass | 6 | 4.5 | 0.4 |
+| Solar Plant | 1 | 160 | Solar | 8 | 8 | 0 |
+| Wind Plant | 1.05 | 180 | Wind | 9 | 9.45 | 0 |
+| Hydro Plant | 0.35 | 250 | Water | 15 | 5.25 | 0.1 |
+| Nuclear Plant | 2.5 | 1200 | Uranium | 2 | 5 | 4 |
+
+## Resource Plant
+
+| Resource Plant Data | Build Cost (Coin k) | Product (kg) | Waste |
+| :--- | :---: | :---: | :---: |
+| Coal Plant | 100 | 10 | 8 |
+| Gas Plant | 160 | 8 | 4.8 |
+| BiomassPlant | 180 | 6 | 3 |
+| Nuclear Plant | 500 | 2 | 1.8 |
+
+
+---
+# ขอให้สนุก 😉
