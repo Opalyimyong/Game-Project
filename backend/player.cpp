@@ -1,5 +1,7 @@
 #include "player.h"
 #include "building.h"
+#include "node.h"
+#include "game_data.h"
 
 #include <iostream>
 
