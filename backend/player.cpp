@@ -110,21 +110,3 @@ bool Player::isGameOver() const
     }
     return false;
 }
-
-bool Player::isAllCityNodesUnpowered() const
-{
-    if (city_nodes_.empty())
-    {
-        return false;
-    }
-
-    for (const auto &node : city_nodes_)
-    {
-        if (node != nullptr && node->isPowered())
-        {
-            return false;
-        }
-    }
-
-    return true;
-}

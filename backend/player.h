@@ -41,5 +41,4 @@ public:
     double calculateAssetValue() const;        // cal all value
     bool isBankrupt() const;
     bool isGameOver() const;
-    bool isAllCityNodesUnpowered() const;
 };
