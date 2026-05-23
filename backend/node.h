@@ -10,7 +10,8 @@ enum class NodeType
 {
     City,
     Power,
-    Resource
+    Resource,
+    None
 };
 
 struct NodePose
@@ -66,7 +67,7 @@ double GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB);
 
 class CityNode : public Node {
     public:
-        CityNode(double x, double y, CityType city_type) : Node(x, y, NodeType::City), city_data_{city_type} {} //Contructor
+        CityNode(int x, int y, CityType city_type) : Node(x, y, NodeType::City), city_data_{city_type} {} //Contructor
         double getElectricityPrice() const { return electricity_price_; } //เช็ค rate ค่าไฟ
         double getCurrentDemandTillActive() const { return city_data_.min_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
         double getCurrentDemandTillFullyPowered() const { return city_data_.max_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
@@ -91,7 +92,7 @@ class CityNode : public Node {
 class PowerPlantNode : public Node {
     public:
         //contructor
-        PowerPlantNode(double x, double y) : Node(x, y, NodeType::Power), source_type_(SourceType::None) {} 
+        PowerPlantNode(int x, int y) : Node(x, y, NodeType::Power), source_type_(SourceType::None) {} 
         //getter
         double getSolarIndex() const { return solar_index_; } //passive gain จาก solar
         double getWindIndex() const { return wind_index_; } //passive gain จาก wind
@@ -115,22 +116,19 @@ class PowerPlantNode : public Node {
 
 class ResourceNode : public Node {
     public:
-        ResourceNode(double x, double y) : Node(x, y, NodeType::Resource) {} //contructor
+        ResourceNode(int x, int y) : Node(x, y, NodeType::Resource) {} //contructor
         ResourceType getResourceType() const { return resource_type_; } //ประเภทของทรัพยากร
         int getPurityLevel() const { return purity_level_; } //ระดับความบริสุทธิ์ของทรัพยากร
         void resourceOwner(Player* player) { owner_ = player; } //กําหนดเจ้าของทรัพยากร
         double getPurityMultiplier() const{}
         void fetchResourceType(){}//get building data
         //เดี๋ยวต้องทําดึงข้อมูลจาก turn มาใส่ใน owner node ด้วย เพื่อให้รู้ว่าใครเป็นเจ้าของทรัพยากรนี้
-        void SetBuilding(std::unique_ptr<Building> building) override
-        {
-            building_ = std::move(building);
-            bool isPlaced = building_->process();
-            item_ = building_->getItem();
-        }
+        void SetBuilding(std::unique_ptr<Building> building) override {}
     private:
         Item item_;
         ResourceType resource_type_; //set from map
         int purity_level_; //set from map
         Player* owner_; 
 };
+
+

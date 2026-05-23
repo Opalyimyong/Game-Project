@@ -59,6 +59,7 @@ void ResourceNode::fetchResourceType()
 }
 void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
 {
+    if (building_ != nullptr) {
     building_ = std::move(building);
     checkInputType();
     fetchPlantType();
@@ -80,6 +81,7 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
         building_->process();
         itemFromResource_ = building_->getItem();
     }
+}
 }
 void CityNode::setEnergyRange()
 {
