@@ -69,9 +69,16 @@ void Player::resetActionPoints() { AP_ = 3; }
 
 void Player::registerBuilding(Building *building) { buildings_.push_back(building); }
 
+void Player::accessCityNode(CityNode *node) { city_nodes_.push_back(node); }
+
 double Player::calculateAssetValue() const
 {
-    return 0; // COME BACK
+    double point = 0.0;
+    for (const auto &building : buildings_)
+    {
+        point += building->getCurrentValue();
+    }
+    return point;
 }
 
 bool Player::isBankrupt() const

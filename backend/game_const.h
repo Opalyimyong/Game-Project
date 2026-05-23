@@ -11,6 +11,12 @@ enum class SourceType
     None
 };
 
+enum class BuildingType
+{
+    PowerPlant,
+    ResourcePlant,
+};
+
 enum class ResourceType
 {
     Coal,

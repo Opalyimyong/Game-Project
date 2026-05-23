@@ -12,13 +12,14 @@ protected:
     int id_;
     bool is_active_;
     int level_;
+    BuildingType building_type_;
     Player *owner_; // prt to class Player for using function in Player
     std::vector<int> location_node_;
     Item item_;                 // Product for send to node and link
     double waste_output_ = 0.0; // waste output per turn
 public:
     // Contructor & Destructor
-    Building(const int &id, Player *owner, const std::vector<int> location_node, Item item);
+    Building(const int &id, BuildingType building_type, Player *owner, const std::vector<int> location_node, Item item);
     virtual ~Building() = default;
     virtual bool addResourceInput(Item input) { return false; } // for power plant to add resource input from link
     // Getter
@@ -65,7 +66,7 @@ private:
     PlantType type_;
     Item resource_input_;
     PowerPlantStats stats_;
-
+    SourceType source_type_; // for input resource
 public:
     // Contructor & Destructor
     PowerPlant(const int &id, Player *owner, const std::vector<int> location_node, PlantType type);
@@ -73,7 +74,7 @@ public:
     // Getter
     PlantType getType() const { return type_; }
     Item getResourceInput() const { return resource_input_; }
-
+    SourceType getSourceType() const { return source_type_; }
     // Setter
     bool addResourceInput(Item input) override; // input resource from outter
     void clearResourceInput();         // at end of process

@@ -2,6 +2,8 @@
 #include <vector>
 #include <string>
 
+#include "Node.h"
+
 class Building;
 
 class Player
@@ -13,6 +15,7 @@ private:
     double waste_;                      // > 100
     std::vector<Building *> buildings_; // collection of building that player have
     std::string whileError_ = "";
+    std::vector<CityNode *> city_nodes_; // collection of node that player have
 
 public:
     // Constructor & Destructor
@@ -34,6 +37,7 @@ public:
     double getEfficiencyModifier() const;
     void resetActionPoints();
     void registerBuilding(Building *building); // add building to vec buildings_
+    void accessCityNode(CityNode *node); // add node to vec city_nodes_
     double calculateAssetValue() const;        // cal all value
     bool isBankrupt() const;
     bool isGameOver() const;

@@ -15,6 +15,9 @@ public:
     Player* GetCurrentPlayer() const;
     void NextTurn();
     
+    //End Game Logic
+    bool EndGame() const;
+    bool IsPlayerBankrupt(const Player* player) const; //check and delete player from game
     Player* GetWinner() const;
 
 
