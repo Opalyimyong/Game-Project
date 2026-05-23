@@ -41,7 +41,10 @@ public:
     
     //Setter
     virtual void SetBuilding(std::unique_ptr<Building> building) = 0;
-    virtual void recieveItem(Item item) {} 
+    virtual void recieveItem(Item item) {}
+    virtual void fetchPlantType() {}
+    virtual PlantType getPlantType() {}
+
     virtual ~Node() = default;
 
     static double GetDistanceN(const Node& a, const Node& b) {
@@ -75,7 +78,7 @@ class CityNode : public Node {
             energy_now_ += item.amount; if (energy_now_ >= city_data_.min_Energy) { is_powered_ = true; }} //รับไฟจาก link;
         const std::vector<CityContract>& getContracts() const { return contracts_; } //เก็บว่าใครจ่ายอยู่บ้าง
         void newContract(Player* player, double amount); //รับไฟจากใคร เท่าไหร่
-        
+        void setEnergyRange(){}
     private:
         double energy_now_; //ไฟ้ฟ้าในปัจจุบัน realtime
         double current_demand_;  //ความต้องการไฟฟ้าปัจจุบัน realtime
@@ -95,9 +98,10 @@ class PowerPlantNode : public Node {
         bool hasWater() const { return has_water_; } //มีแหล่งนํ้าหรือไม่
         double getEnvironmentMultiplier(PlantType type) const; 
         void checkInputType(){}
-        void fetchPlantType(){} //get building data
+        void fetchPlantType() override{} //get building data
+        PlantType getPlantType() override { return plant_type_; }
         void SetBuilding(std::unique_ptr<Building> building) override {}
-        
+    //get building data
         void recieveItem(Item item) override {itemFromResource_ = item;} //รับ resource input จาก link
 
     private:

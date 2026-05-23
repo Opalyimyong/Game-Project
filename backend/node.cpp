@@ -77,10 +77,8 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
         {
             building_->addResourceInput({TransportType::Resource, hasWater() ? 5.0 : 0.0}); // สมมติว่าถ้ามีน้ำก็ได้ 5 หน่วย ถ้าไม่มีน้ำก็ไม่ได้อะไร
         }
-    }
-    else if (source_type_ == SourceType::Resource_Based)
-    {
-        // รอรับ resource input จาก link แล้วค่อยเช็คว่าทรัพยากรที่ได้รับตรงกับที่โรงไฟฟ้าต้องการไหม
+        building_->process();
+        itemFromResource_ = building_->getItem();
     }
 }
 void CityNode::setEnergyRange()
