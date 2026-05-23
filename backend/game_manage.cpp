@@ -99,6 +99,7 @@ void NextTurn() {
     }
     if (GetCurrentPlayer()->getActionPoints() <= 0) {
         std::cout << "Player " << GetCurrentPlayer()->getId() << " has no action points left. Moving to next player.\n";
+        GetCurrentPlayer()->resetActionPoints();
         turn_index_ = (turn_index_ + 1) % players_.size();
     }
 }

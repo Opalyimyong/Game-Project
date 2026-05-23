@@ -10,9 +10,9 @@ class Player
 {
 private:
     std::string id_;
-    double coins_;                      // unit = kCoins
-    int AP_;                            // Action Point 3 points per turn
-    double waste_;                      // > 100
+    double coins_ = 750.0;                      // unit = kCoins
+    int AP_ = 3;                            // Action Point 3 points per turn
+    double waste_ = 0.0;                      // > 100
     std::vector<Building *> buildings_; // collection of building that player have
     std::string whileError_ = "";
     std::vector<CityNode *> city_nodes_; // collection of node that player have
