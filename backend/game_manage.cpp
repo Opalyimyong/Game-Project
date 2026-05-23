@@ -103,6 +103,7 @@ bool NextTurn() {
 
 void ProcessWorld() {
     std::cout << "--- END OF ROUND SIMULATION ---" << std::endl;
+    std::cout << "Total nodes: " << all_nodes_.size() << ", Total links: " << all_links_.size() << std::endl;
     
     // Step 0: Clear old city contracts
     for (auto* n : all_nodes_) {
@@ -111,54 +112,75 @@ void ProcessWorld() {
         }
     }
 
-    // Step 1: Mine Phase - all resource nodes process and generate output
+    // Step 1: Mine Phase - resource plants produce and waste is attributed to their link owner
     for (auto* n : all_nodes_) {
         if (n->GetType() == NodeType::Resource && n->HasBuilding()) {
-            if (auto* rp = dynamic_cast<ResourcePlant*>(n->GetBuilding())) {
-                rp->process();
-                std::cout << "Resource node produced output" << std::endl;
+            auto* rp = dynamic_cast<ResourcePlant*>(n->GetBuilding());
+            if (rp && rp->process()) {
+                std::cout << "[MINE] Resource node at (" << n->GetX() << "," << n->GetY() << ") produced " << rp->getItem().amount << " units, waste=" << rp->getItem().waste_amount << std::endl;
+                // Attribute resource plant's own waste to whoever owns the link from it
+                double rpWaste = rp->getItem().waste_amount;
+                if (rpWaste > 0) {
+                    for (auto* lk : all_links_) {
+                        if (lk->GetNodeA() == n && lk->GetOwner()) {
+                            lk->GetOwner()->addWaste(rpWaste);
+                            std::cout << "[WASTE] Resource waste " << rpWaste << " -> Player " << lk->GetOwner()->getId() << std::endl;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                std::cout << "[MINE] Resource node at (" << n->GetX() << "," << n->GetY() << ") has NO building or process failed" << std::endl;
             }
         }
     }
-    // Push resource along links to power plants
-    for (auto* link : all_links_) {
-        if (link->GetNodeA()->GetType() == NodeType::Resource && link->GetNodeB()->GetType() == NodeType::Power) {
-            auto* rp = dynamic_cast<ResourcePlant*>(link->GetNodeA()->GetBuilding());
-            if (rp) link->GetNodeB()->recieveItem(link->GetOwner(), rp->getItem());
+    // Push resource along links Resource->Power
+    for (auto* lk : all_links_) {
+        if (lk->GetNodeA()->GetType() == NodeType::Resource && lk->GetNodeB()->GetType() == NodeType::Power) {
+            auto* rp = dynamic_cast<ResourcePlant*>(lk->GetNodeA()->GetBuilding());
+            if (rp) {
+                std::cout << "[LINK] Pushing " << rp->getItem().amount << " resource from (" << lk->GetNodeA()->GetX() << "," << lk->GetNodeA()->GetY() << ") to power plant" << std::endl;
+                lk->GetNodeB()->recieveItem(lk->GetOwner(), rp->getItem());
+            }
         }
     }
 
     // Step 2: Power Phase - power plants burn resources, generate energy and waste
     for (auto* n : all_nodes_) {
         if (n->GetType() == NodeType::Power && n->HasBuilding()) {
-            if (auto* pp = dynamic_cast<PowerPlant*>(n->GetBuilding())) {
+            auto* pp = dynamic_cast<PowerPlant*>(n->GetBuilding());
+            if (pp) {
+                std::cout << "[POWER] Power plant at (" << n->GetX() << "," << n->GetY() << ") resource_input=" << pp->getResourceInputAmount() << std::endl;
                 if (pp->process()) {
                     double wasteGenerated = pp->getItem().waste_amount;
+                    std::cout << "[POWER] Processed! energy=" << pp->getItem().amount << " waste=" << wasteGenerated << std::endl;
                     if (wasteGenerated > 0) {
-                        // Find the link owner to assign waste to the correct player
                         for (auto* lk : all_links_) {
-                            if (lk->GetNodeA() == n || lk->GetNodeB() == n) {
-                                if (lk->GetOwner()) {
-                                    lk->GetOwner()->addWaste(wasteGenerated);
-                                    std::cout << "Added " << wasteGenerated << " waste to Player " << lk->GetOwner()->getId() << std::endl;
-                                    break;
-                                }
+                            if ((lk->GetNodeA() == n || lk->GetNodeB() == n) && lk->GetOwner()) {
+                                lk->GetOwner()->addWaste(wasteGenerated);
+                                std::cout << "[WASTE] Power waste " << wasteGenerated << " -> Player " << lk->GetOwner()->getId() << std::endl;
+                                break;
                             }
                         }
                     }
+                } else {
+                    std::cout << "[POWER] process() returned false (not enough fuel)" << std::endl;
                 }
             }
         }
     }
-    // Push energy along links to cities
+    // Push energy along links Power->City
     for (auto* lk : all_links_) {
         if (lk->GetNodeA()->GetType() == NodeType::Power && lk->GetNodeB()->GetType() == NodeType::City) {
             auto* pp = dynamic_cast<PowerPlant*>(lk->GetNodeA()->GetBuilding());
-            if (pp) lk->GetNodeB()->recieveItem(lk->GetOwner(), pp->getItem());
+            if (pp) {
+                std::cout << "[LINK] Pushing " << pp->getItem().amount << " energy to city" << std::endl;
+                lk->GetNodeB()->recieveItem(lk->GetOwner(), pp->getItem());
+            }
         }
     }
 
-    // Step 3: City Phase -> Payout Coins!
+    // Step 3: City Phase - payout coins!
     for (auto* n : all_nodes_) {
         if (n->GetType() == NodeType::City) {
             auto* city = dynamic_cast<CityNode*>(n);
@@ -166,12 +188,13 @@ void ProcessWorld() {
                 for (const auto& contract : city->getContracts()) {
                     if (contract.player) {
                         contract.player->addCoins(contract.amount_recieved);
-                        std::cout << "Player " << contract.player->getId() << " earned " << contract.amount_recieved << " coins!" << std::endl;
+                        std::cout << "[CITY] Player " << contract.player->getId() << " earned " << contract.amount_recieved << " coins!" << std::endl;
                     }
                 }
             }
         }
     }
+
 }
 
 bool isPlayerLost(const Player* player) {
