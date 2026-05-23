@@ -386,9 +386,24 @@ namespace GameData
     }
 
     // Create City Data for Add in Node
-    CityData CreateCityData(CityType type, double min, double max, double charge)
+    CityData CreateCityData(CityType type)
     {
-        return {type, min, max, charge};
+        double min_Energy = 0.0;
+        double max_Energy = 0.0;
+        double Elec_Charge = 0.0;
+        if (type == CityType::Small)
+        {
+            min_Energy = 150.0;
+            max_Energy = 300.0;
+            Elec_Charge = 1.5;
+        }
+        else if (type == CityType::Big)
+        {
+            min_Energy = 400.0;
+            max_Energy = 600.0;
+            Elec_Charge = 2.0;
+        }
+        return {type, min_Energy, max_Energy, Elec_Charge};
     }
 
     // Send Rate of Calculate Shipping Cost
