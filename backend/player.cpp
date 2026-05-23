@@ -73,12 +73,12 @@ void Player::accessCityNode(CityNode *node) { city_nodes_.push_back(node); }
 
 double Player::calculateAssetValue() const
 {
-    double point = 0.0;
-    for (const auto &building : buildings_)
-    {
-        point += building->getCurrentValue();
-    }
-    return point;
+    double Cpoint = coins_;
+    double Bpoint = 0.0;
+    for (const auto &building : buildings_) { Bpoint += building->getValue(); } //cal all buidling value
+    
+
+    return Cpoint + Bpoint;
 }
 
 bool Player::isBankrupt() const

@@ -46,9 +46,9 @@ bool ResourcePlant::process()
     return true;
 }
 
-int ResourcePlant::getCurrentValue() const
-{ // 70% of Build Cost
-    return static_cast<int>(stats_.build_cost * 70.0 / 100.0);
+void ResourcePlant::setCurrentValue()
+{
+    value_ = stats_.build_cost * 70.0 / 100.0;
 }
 
 // PowerPlant Class
@@ -134,7 +134,7 @@ bool PowerPlant::process()
     return true;
 }
 
-int PowerPlant::getCurrentValue() const
-{ // 75% of Build Cost
-    return static_cast<int>(stats_.build_cost * 75.0f / 100.0f);
+void PowerPlant::setCurrentValue()
+{
+    value_ = stats_.build_cost * 75.0f / 100.0f;
 }
