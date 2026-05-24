@@ -67,7 +67,7 @@ double GetDistanceBetweenPoses(const NodePose& poseA, const NodePose& poseB);
 
 class CityNode : public Node {
     public:
-        CityNode(int x, int y, CityType city_type) : Node(x, y, NodeType::City), city_data_{city_type} {} //Contructor
+        CityNode(int x, int y, CityType city_type) : Node(x, y, NodeType::City), energy_now_(0), current_demand_(0), electricity_price_(0), is_powered_(false), city_data_{city_type} { setEnergyRange(); } //Contructor
         double getElectricityPrice() const { return electricity_price_; } //เช็ค rate ค่าไฟ
         double getCurrentDemandTillActive() const { return city_data_.min_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
         double getCurrentDemandTillFullyPowered() const { return city_data_.max_Energy - energy_now_; } //ต้องการไฟเท่าไหร่ ถึงจะ Active
@@ -104,6 +104,11 @@ class PowerPlantNode : public Node {
         double getSolarIndex() const { return solar_index_; } //passive gain จาก solar
         double getWindIndex() const { return wind_index_; } //passive gain จาก wind
         bool hasWater() const { return has_water_; } //มีแหล่งนํ้าหรือไม่
+        void setEnvironmentStats(double solar, double wind, bool water) {
+            solar_index_ = solar;
+            wind_index_ = wind;
+            has_water_ = water;
+        }
         double getEnvironmentMultiplier(PlantType type) const; 
         void checkInputType();
         void fetchPlantType() override; //get building data

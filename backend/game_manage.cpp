@@ -13,6 +13,21 @@ std::vector<Link *> all_links_ = {};
 std::vector<std::vector<std::unique_ptr<Node>>> nodeLayer;
 std::vector<std::vector<std::unique_ptr<Building>>> buildingLayer;
 
+void ResetGame() {
+    for (auto* p : players_) delete p;
+    players_.clear();
+    
+    for (auto* n : all_nodes_) delete n;
+    all_nodes_.clear();
+    
+    for (auto* l : all_links_) delete l;
+    all_links_.clear();
+    
+    turn_index_ = 0;
+    game_is_over_ = false;
+    game_over_reason_ = "";
+}
+
 Node* GetOrCreateNode(int r, int c, std::string type, std::string subtype) {
     for (auto* n : all_nodes_) {
         if (n->GetX() == r && n->GetY() == c) return n;
@@ -45,6 +60,12 @@ void SyncBuildingsToNodes(
     // Keeping for backwards compatibility
 }
 
+
+std::chrono::steady_clock::time_point game_start_time_;
+int game_timer_minutes_ = 10;
+bool game_is_over_ = false;
+std::string game_over_reason_ = "";
+
 /*--------End Game Logic--------*/
 bool IsAllCityNodesPowered() {
     bool hasCityNode = false;
@@ -74,15 +95,37 @@ Player* GetWinner() {
 }
 
 bool isEndGame() {
+    if (game_is_over_) return true;
+    
+    if (players_.empty()) return false;
+
     if (IsAllCityNodesPowered()) {
         std::cout << "All city nodes are powered. The game has ended.\n";
+        game_over_reason_ = "All Cities Successfully Powered";
+        game_is_over_ = true;
         return true;
     }
-    if (players_.size() <= 1) {
-        std::cout << "Others players are bankrupt. The game has ended.\n"
-                    << "The winner is " << (GetWinner() ? GetWinner()->getId() : "No one") << "\n";
+    
+    int active_players = 0;
+    for (const auto* p : players_) {
+        if (!p->isGameOver()) active_players++;
+    }
+    if (active_players <= 1 && players_.size() > 1) {
+        std::cout << "Other players are bankrupt. The game has ended.\n";
+        game_over_reason_ = "Corporate Monopoly Established";
+        game_is_over_ = true;
         return true;
     }
+    
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::minutes>(now - game_start_time_).count();
+    if (elapsed >= game_timer_minutes_) {
+        std::cout << "Timer expired! The game has ended.\n";
+        game_over_reason_ = "Mission Timer Expired";
+        game_is_over_ = true;
+        return true;
+    }
+    
     return false;
 }
 
@@ -138,8 +181,13 @@ void ProcessWorld() {
     for (auto* lk : all_links_) {
         if (lk->GetNodeA()->GetType() == NodeType::Resource && lk->GetNodeB()->GetType() == NodeType::Power) {
             auto* rp = dynamic_cast<ResourcePlant*>(lk->GetNodeA()->GetBuilding());
-            if (rp) {
-                std::cout << "[LINK] Pushing " << rp->getItem().amount << " resource from (" << lk->GetNodeA()->GetX() << "," << lk->GetNodeA()->GetY() << ") to power plant" << std::endl;
+            if (rp && rp->getItem().amount > 0) {
+                double ship_cost = lk->GetDistance() * GameData::GetTranportRate(TransportType::Resource);
+                if (lk->GetOwner() && !lk->GetOwner()->payAutoRunCost(ship_cost)) {
+                    std::cout << "[LINK] Player " << lk->GetOwner()->getId() << " cannot afford shipping cost of " << ship_cost << " for Resource -> Power!" << std::endl;
+                    continue;
+                }
+                std::cout << "[LINK] Pushing " << rp->getItem().amount << " resource from (" << lk->GetNodeA()->GetX() << "," << lk->GetNodeA()->GetY() << ") to power plant (Cost: " << ship_cost << ")" << std::endl;
                 lk->GetNodeB()->recieveItem(lk->GetOwner(), rp->getItem());
             }
         }
@@ -173,8 +221,13 @@ void ProcessWorld() {
     for (auto* lk : all_links_) {
         if (lk->GetNodeA()->GetType() == NodeType::Power && lk->GetNodeB()->GetType() == NodeType::City) {
             auto* pp = dynamic_cast<PowerPlant*>(lk->GetNodeA()->GetBuilding());
-            if (pp) {
-                std::cout << "[LINK] Pushing " << pp->getItem().amount << " energy to city" << std::endl;
+            if (pp && pp->getItem().amount > 0) {
+                double ship_cost = lk->GetDistance() * GameData::GetTranportRate(TransportType::Energy);
+                if (lk->GetOwner() && !lk->GetOwner()->payAutoRunCost(ship_cost)) {
+                    std::cout << "[LINK] Player " << lk->GetOwner()->getId() << " cannot afford shipping cost of " << ship_cost << " for Power -> City!" << std::endl;
+                    continue;
+                }
+                std::cout << "[LINK] Pushing " << pp->getItem().amount << " energy to city (Cost: " << ship_cost << ")" << std::endl;
                 lk->GetNodeB()->recieveItem(lk->GetOwner(), pp->getItem());
             }
         }
@@ -198,7 +251,7 @@ void ProcessWorld() {
 }
 
 bool isPlayerLost(const Player* player) {
-    if (player->isBankrupt() || player->getTotalWaste() >= 100.0) {
+    if (player->isGameOver()) {
         std::cout << "Player " << player->getId() << " has lost the game.\n";
         return true;
     }

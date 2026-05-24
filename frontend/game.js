@@ -356,6 +356,8 @@ socket.onmessage = (event) => {
             });
             updateHUD();
             drawGrid(); // Re-render grid to show updated UI state if necessary
+        } else if (msg.action === "game_over") {
+            triggerGameOver(msg.winner_name, msg.winner_score, msg.reason);
         }
     } catch(e) {
         console.error("Error parsing websocket message:", e);
@@ -486,11 +488,30 @@ function handleGridClick(row, col) {
             const dest = node;
             
             let valid = false;
-            if (source.type === 'Resource' && dest.type === 'Power') valid = true;
-            if (source.type === 'Power' && dest.type === 'City') valid = true;
+            let errorMsg = "Invalid Link! Must be Resource->Power or Power->City.";
+            
+            if (source.type === 'Resource' && dest.type === 'Power') {
+                const sourceB = buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c];
+                const destB = buildingLayer[row][col];
+                if (!sourceB || !destB) {
+                    errorMsg = "Both nodes must have buildings to link them!";
+                } else if (sourceB.subtype === "Coal" && destB.subtype !== "Coal Plant") {
+                    errorMsg = "Coal can only be sent to a Coal Plant!";
+                } else if (sourceB.subtype === "Gas" && destB.subtype !== "Gas Plant") {
+                    errorMsg = "Gas can only be sent to a Gas Plant!";
+                } else if (sourceB.subtype === "Biomass" && destB.subtype !== "Biomass Plant") {
+                    errorMsg = "Biomass can only be sent to a Biomass Plant!";
+                } else if (sourceB.subtype === "Uranium" && destB.subtype !== "Nuclear Plant") {
+                    errorMsg = "Uranium can only be sent to a Nuclear Plant!";
+                } else {
+                    valid = true;
+                }
+            } else if (source.type === 'Power' && dest.type === 'City') {
+                valid = true;
+            }
 
             if (!valid) {
-                showMessage("Invalid Link! Must be Resource->Power or Power->City.");
+                showErrorPopup(errorMsg);
                 selectedNodeForLink = null;
                 return;
             }
@@ -510,10 +531,20 @@ function handleGridClick(row, col) {
             });
             
             let tType = (source.type === 'Resource') ? "Resource" : "Energy";
+            
+            let fromSubtype = source.subtype;
+            let toSubtype = dest.subtype;
+            if (buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c]) {
+                fromSubtype = buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c].subtype || fromSubtype;
+            }
+            if (buildingLayer[row][col]) {
+                toSubtype = buildingLayer[row][col].subtype || toSubtype;
+            }
+
             sendActionToBackend({ 
                   action: "link", 
-                  from: { r: selectedNodeForLink.r, c: selectedNodeForLink.c, type: source.type, subtype: source.subtype }, 
-                  to: { r: row, c: col, type: dest.type, subtype: dest.subtype }, 
+                  from: { r: selectedNodeForLink.r, c: selectedNodeForLink.c, type: source.type, subtype: fromSubtype }, 
+                  to: { r: row, c: col, type: dest.type, subtype: toSubtype }, 
                   player: currentPlayer.id, 
                   transport_type: tType 
               });
@@ -595,6 +626,7 @@ function confirmBuild() {
     const currentPlayer = players[currentPlayerIndex];
     const row = pendingBuilding.r;
     const col = pendingBuilding.c;
+    const node = nodeLayer[row][col];
     
     buildingLayer[row][col] = { 
         type: pendingBuilding.type, 
@@ -609,7 +641,10 @@ function confirmBuild() {
         subtype: subtype,
         r: row, 
         c: col, 
-        player: currentPlayer.id 
+        player: currentPlayer.id,
+        sunlight: node.sunlight || 0,
+        wind: node.wind || 0,
+        water: node.water || false
     });
     
     updateHUD();
@@ -621,3 +656,49 @@ function confirmBuild() {
 initMap();
 updateHUD();
 drawGame();
+
+// Error Modal Logic
+function showErrorPopup(msg) {
+    document.getElementById('error-message-text').textContent = msg;
+    document.getElementById('error-modal').style.display = 'flex';
+}
+
+function closeErrorModal() {
+    document.getElementById('error-modal').style.display = 'none';
+}
+
+// Timer Logic
+let remainingSeconds = (parseInt(sessionStorage.getItem('gameTimerMinutes')) || 10) * 60;
+const timerDisplay = document.getElementById('timer-display');
+
+function updateTimerDisplay() {
+    const mins = Math.floor(remainingSeconds / 60);
+    const secs = remainingSeconds % 60;
+    timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    
+    if (remainingSeconds <= 60) {
+        timerDisplay.style.color = '#ff4444';
+        timerDisplay.style.borderColor = '#ff4444';
+        timerDisplay.style.textShadow = '0 0 10px rgba(255, 68, 68, 0.5)';
+    }
+}
+
+const timerInterval = setInterval(() => {
+    if (remainingSeconds > 0) {
+        remainingSeconds--;
+        updateTimerDisplay();
+    } else {
+        clearInterval(timerInterval);
+        timerDisplay.textContent = "00:00";
+    }
+}, 1000);
+updateTimerDisplay();
+
+// Game Over Logic
+function triggerGameOver(winnerName, winnerScore, reason) {
+    clearInterval(timerInterval);
+    document.getElementById('game-over-reason').textContent = reason;
+    document.getElementById('winner-name').textContent = winnerName;
+    document.getElementById('winner-score').textContent = `Score: ${winnerScore.toFixed(1)}`;
+    document.getElementById('game-over-modal').style.display = 'flex';
+}

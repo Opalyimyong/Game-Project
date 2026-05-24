@@ -93,6 +93,9 @@ bool PowerPlant::process()
         resource_input_.amount = stats_.max_input; // Resource input above max, use max input
     }
     item_.amount = resource_input_.amount * stats_.eff_mult;
+    if (owner_) {
+        item_.amount *= (1.0 - owner_->getEfficiencyModifier());
+    }
     PowerPlant::processWaste();
     return true;
 }

@@ -27,8 +27,36 @@ void broadcastGameState(struct mg_mgr *mgr) {
     }
 }
 
+void broadcastGameOver(struct mg_mgr *mgr) {
+    if (!game_is_over_) return;
+    
+    Player* winner = GetWinner();
+    std::string winner_name = winner ? winner->getId() : "None";
+    double winner_score = winner ? winner->calculateAssetValue() : 0.0;
+    
+    std::stringstream ss;
+    ss << "{\"action\":\"game_over\",\"reason\":\"" << game_over_reason_ 
+       << "\",\"winner_name\":\"" << winner_name << "\",\"winner_score\":" << winner_score << "}";
+       
+    std::string response = ss.str();
+    std::cout << "Broadcasting Game Over: " << response << std::endl;
+    
+    for (struct mg_connection *c = mgr->conns; c != NULL; c = c->next) {
+        if (c->is_websocket) {
+            mg_ws_send(c, response.c_str(), response.length(), WEBSOCKET_OP_TEXT);
+        }
+    }
+}
+
+bool has_broadcasted_game_over = false;
+
 void fn(struct mg_connection *c, int ev, void *ev_data) {
-    if (ev == MG_EV_HTTP_MSG) {
+    if (ev == MG_EV_POLL) {
+        if (!has_broadcasted_game_over && !players_.empty() && isEndGame()) {
+            has_broadcasted_game_over = true;
+            broadcastGameOver(c->mgr);
+        }
+    } else if (ev == MG_EV_HTTP_MSG) {
         struct mg_http_message *hm = (struct mg_http_message *) ev_data;
         mg_ws_upgrade(c, hm, NULL); 
     } else if (ev == MG_EV_WS_OPEN) {
@@ -37,7 +65,6 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
             players_.push_back(new Player("p1"));
             players_.push_back(new Player("p2"));
         }
-        // Send the initial authoritative state to the client immediately upon connection
         broadcastGameState(c->mgr);
 
     } else if (ev == MG_EV_WS_MSG) {
@@ -46,11 +73,20 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
         std::cout << "Received: " << payload << std::endl;
 
         if (payload.find("START_GAME") != std::string::npos) {
-            players_.clear();
+            ResetGame();
             if (payload.find("\"id\":\"p1\"") != std::string::npos) players_.push_back(new Player("p1"));
             if (payload.find("\"id\":\"p2\"") != std::string::npos) players_.push_back(new Player("p2"));
             if (payload.find("\"id\":\"p3\"") != std::string::npos) players_.push_back(new Player("p3"));
             if (payload.find("\"id\":\"p4\"") != std::string::npos) players_.push_back(new Player("p4"));
+            
+            size_t tm_pos = payload.find("\"timer_minutes\":");
+            if (tm_pos != std::string::npos) {
+                game_timer_minutes_ = std::stoi(payload.substr(tm_pos + 16));
+            }
+            game_start_time_ = std::chrono::steady_clock::now();
+            game_is_over_ = false;
+            has_broadcasted_game_over = false;
+            game_over_reason_ = "";
             
             std::string response = "{\"status\":\"started\"}";
             mg_ws_send(c, response.c_str(), response.length(), WEBSOCKET_OP_TEXT);
@@ -82,12 +118,12 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
             } else if (payload.find("\"type\":\"PowerPlant\"") != std::string::npos) {
                 typeStr = "Power";
                 PlantType pt = PlantType::CoalPlant;
-                if (payload.find("\"subtype\":\"GasPlant\"") != std::string::npos) { pt = PlantType::GasPlant; subtypeStr = "GasPlant"; }
-                else if (payload.find("\"subtype\":\"BiomassPlant\"") != std::string::npos) { pt = PlantType::BiomassPlant; subtypeStr = "BiomassPlant"; }
-                else if (payload.find("\"subtype\":\"SolarPlant\"") != std::string::npos) { pt = PlantType::SolarPlant; subtypeStr = "SolarPlant"; }
-                else if (payload.find("\"subtype\":\"WindPlant\"") != std::string::npos) { pt = PlantType::WindPlant; subtypeStr = "WindPlant"; }
-                else if (payload.find("\"subtype\":\"HydroPlant\"") != std::string::npos) { pt = PlantType::HydroPlant; subtypeStr = "HydroPlant"; }
-                else if (payload.find("\"subtype\":\"NuclearPlant\"") != std::string::npos) { pt = PlantType::NuclearPlant; subtypeStr = "NuclearPlant"; }
+                if (payload.find("\"subtype\":\"Gas Plant\"") != std::string::npos) { pt = PlantType::GasPlant; subtypeStr = "Gas Plant"; }
+                else if (payload.find("\"subtype\":\"Biomass Plant\"") != std::string::npos) { pt = PlantType::BiomassPlant; subtypeStr = "Biomass Plant"; }
+                else if (payload.find("\"subtype\":\"Solar Plant\"") != std::string::npos) { pt = PlantType::SolarPlant; subtypeStr = "Solar Plant"; }
+                else if (payload.find("\"subtype\":\"Wind Plant\"") != std::string::npos) { pt = PlantType::WindPlant; subtypeStr = "Wind Plant"; }
+                else if (payload.find("\"subtype\":\"Hydro Plant\"") != std::string::npos) { pt = PlantType::HydroPlant; subtypeStr = "Hydro Plant"; }
+                else if (payload.find("\"subtype\":\"Nuclear Plant\"") != std::string::npos) { pt = PlantType::NuclearPlant; subtypeStr = "Nuclear Plant"; }
                 
                 cost = GameData::GetPowerPlantStats(pt).build_cost;
                 PowerPlant* pp = new PowerPlant(rand(), p, {0,0}, pt);
@@ -103,9 +139,23 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
 
             if (p && p->executeManualAction(cost)) {
                 if (newBuilding) {
-                    // Node takes ownership. Do NOT also call registerBuilding
-                    // to avoid a dangling pointer in players_ buildings_ vector.
                     Node* n = GetOrCreateNode(r, col, typeStr, subtypeStr);
+                    if (n->GetType() == NodeType::Power) {
+                        auto* ppn = dynamic_cast<PowerPlantNode*>(n);
+                        if (ppn) {
+                            double sl = 0.0, wnd = 0.0; bool wtr = false;
+                            size_t p_sl = payload.find("\"sunlight\":");
+                            if (p_sl != std::string::npos) sl = std::stod(payload.substr(p_sl + 11));
+                            size_t p_wn = payload.find("\"wind\":");
+                            if (p_wn != std::string::npos) wnd = std::stod(payload.substr(p_wn + 7));
+                            size_t p_wt = payload.find("\"water\":");
+                            if (p_wt != std::string::npos) {
+                                std::string val = payload.substr(p_wt + 8, 4);
+                                wtr = (val == "true");
+                            }
+                            ppn->setEnvironmentStats(sl, wnd, wtr);
+                        }
+                    }
                     n->SetBuilding(std::unique_ptr<Building>(newBuilding));
                 }
                 std::cout << "Player built structure successfully." << std::endl;
@@ -179,12 +229,35 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
             double distance = std::sqrt(std::pow(from_r - to_r, 2) + std::pow(from_c - to_c, 2));
             double cost = distance * GameData::GetTranportRate(tType);
 
-            if (p && p->executeManualAction(cost)) {
+            bool valid_link = true;
+            if (from_type == "Resource" && to_type == "Power") {
+                if (from_subtype == "Coal" && to_subtype != "Coal Plant") valid_link = false;
+                else if (from_subtype == "Gas" && to_subtype != "Gas Plant") valid_link = false;
+                else if (from_subtype == "Biomass" && to_subtype != "Biomass Plant") valid_link = false;
+                else if (from_subtype == "Uranium" && to_subtype != "Nuclear Plant") valid_link = false;
+            }
+
+            if (!valid_link) {
+                std::cout << "Link rejected! Incompatible Resource and Power Plant types." << std::endl;
+            } else if (p && p->executeManualAction(cost)) {
                 Node* nodeA = GetOrCreateNode(from_r, from_c, from_type, from_subtype);
                 Node* nodeB = GetOrCreateNode(to_r, to_c, to_type, to_subtype);
+                
+                bool already_linked = false;
+                for (auto* lk : all_links_) {
+                    if (lk->GetOwner() == p && lk->GetNodeB() == nodeB) {
+                        already_linked = true;
+                        break;
+                    }
+                }
+                
                 Link* newLink = new Link(nodeA, nodeB, p);
                 all_links_.push_back(newLink);
                 std::cout << "Player created a link from (" << from_r << "," << from_c << ") to (" << to_r << "," << to_c << ") with cost " << cost << std::endl;
+                
+                if (!already_linked && nodeB->GetType() == NodeType::City) {
+                    p->accessCityNode(dynamic_cast<CityNode*>(nodeB));
+                }
             } else {
                 std::cout << "Link rejected! Insufficient AP or Coins." << std::endl;
             }

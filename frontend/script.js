@@ -42,6 +42,22 @@ function decrementPlayers() {
     }
 }
 
+let timerMinutes = 10;
+
+function incrementTimer() {
+    if (timerMinutes < 60) {
+        timerMinutes++;
+        document.getElementById('timer-val').textContent = timerMinutes;
+    }
+}
+
+function decrementTimer() {
+    if (timerMinutes > 1) {
+        timerMinutes--;
+        document.getElementById('timer-val').textContent = timerMinutes;
+    }
+}
+
 // THE FIXED START FUNCTION
 function startGame() {
     // Save players to sessionStorage
@@ -50,12 +66,14 @@ function startGame() {
         const name = document.getElementById(`player-name-${i}`).value || `Player ${i+1}`;
         playersData.push({ id: `p${i+1}`, name: name, color: colors[i], ap: 3 });
     }
+    sessionStorage.setItem("gameTimerMinutes", timerMinutes);
     sessionStorage.setItem("gamePlayers", JSON.stringify(playersData));
 
     if (socket.readyState === WebSocket.OPEN) {
         const data = { 
             type: "START_GAME", 
-            players: playersData 
+            players: playersData,
+            timer_minutes: timerMinutes
         };
         socket.send(JSON.stringify(data));
         console.log("Data sent to C++...");
