@@ -21,15 +21,16 @@ let camera = { x: 0, y: 0, isDragging: false, startX: 0, startY: 0 };
 
 // Load Players from sessionStorage
 let players = JSON.parse(sessionStorage.getItem("gamePlayers")) || [
-    { id: "p1", name: "Player 1", color: "#ff0044", ap: 3, score: 0, waste: 0, coins: 300 },
-    { id: "p2", name: "Player 2", color: "#0088ff", ap: 3, score: 0, waste: 0, coins: 300 }
+    { id: "p1", name: "Player 1", color: "#ff0044", ap: 3, score: 0, waste: 0, coins: 500 },
+    { id: "p2", name: "Player 2", color: "#0088ff", ap: 3, score: 0, waste: 0, coins: 500 },
+    { id: "p3", name: "Player 3", color: "#9900ff", ap: 3, score: 0, waste: 0, coins: 500 }
 ];
 
 // Ensure existing sessions without score/waste/coins get them initialized
 players.forEach(p => {
     if (typeof p.score === 'undefined') p.score = 0;
     if (typeof p.waste === 'undefined') p.waste = 0;
-    if (typeof p.coins === 'undefined') p.coins = 300;
+    if (typeof p.coins === 'undefined') p.coins = 500;
 });
 
 let currentPlayerIndex = 0;
@@ -670,8 +671,8 @@ function confirmBuild() {
     
     // Validate Coins
     const costs = {
-        "Coal Plant": 120, "Gas Plant": 180, "Biomass Plant": 220, "Solar Plant": 350,
-        "Wind Plant": 280, "Hydro Plant": 400, "Nuclear Plant": 600,
+        "Coal Plant": 80, "Gas Plant": 140, "Biomass Plant": 120, "Solar Plant": 160,
+        "Wind Plant": 180, "Hydro Plant": 250, "Nuclear Plant": 1200,
         "Coal": 100, "Gas": 160, "Biomass": 180, "Uranium": 500
     };
     const cost = costs[subtype] || 0;

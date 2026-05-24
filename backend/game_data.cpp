@@ -108,13 +108,13 @@ namespace GameData
         {
             min_Energy = 10.0;
             max_Energy = 20.0;
-            Elec_Charge = 2.0;
+            Elec_Charge = 2.5;
         }
         else if (type == CityType::Big)
         {
             min_Energy = 25.0;
             max_Energy = 40.0;
-            Elec_Charge = 2.5;
+            Elec_Charge = 2.8;
         }
         return {type, min_Energy, max_Energy, Elec_Charge};
     }
@@ -125,9 +125,9 @@ namespace GameData
         switch (item)
         {
         case TransportType::Resource:
-            return 2.0;
-        case TransportType::Energy:
             return 1.0;
+        case TransportType::Energy:
+            return 0.8;
         default:
             return 0;
         }
