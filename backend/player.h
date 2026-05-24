@@ -10,7 +10,11 @@ class Player
 {
 private:
     std::string id_;
+<<<<<<< Updated upstream
     double coins_ = 750.0;                      // unit = kCoins
+=======
+    double coins_ = 500;                      // unit = kCoins
+>>>>>>> Stashed changes
     int AP_ = 3;                            // Action Point 3 points per turn
     double waste_ = 0.0;                      // > 100
     std::vector<Building *> buildings_; // collection of building that player have
