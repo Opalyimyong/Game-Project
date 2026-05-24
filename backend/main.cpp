@@ -165,9 +165,9 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
                         if (ppn) {
                             double sl = 0.0, wnd = 0.0; bool wtr = false;
                             size_t p_sl = payload.find("\"sunlight\":");
-                            if (p_sl != std::string::npos) sl = std::stod(payload.substr(p_sl + 11));
+                            if (p_sl != std::string::npos) sl = std::stod(payload.substr(p_sl + 11)) / 10.0;
                             size_t p_wn = payload.find("\"wind\":");
-                            if (p_wn != std::string::npos) wnd = std::stod(payload.substr(p_wn + 7));
+                            if (p_wn != std::string::npos) wnd = std::stod(payload.substr(p_wn + 7)) / 10.0;
                             size_t p_wt = payload.find("\"water\":");
                             if (p_wt != std::string::npos) {
                                 std::string val = payload.substr(p_wt + 8, 4);

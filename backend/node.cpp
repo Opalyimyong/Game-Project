@@ -82,7 +82,7 @@ void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
             }
             else if (plant_type_ == PlantType::HydroPlant)
             {
-                building_->addResourceInput({TransportType::Resource, hasWater() ? 5.0 : 0.0}); // สมมติว่าถ้ามีน้ำก็ได้ 5 หน่วย ถ้าไม่มีน้ำก็ไม่ได้อะไร
+                building_->addResourceInput({TransportType::Resource, hasWater() ? 15.0 : 0.0}); // สมมติว่าถ้ามีน้ำก็ได้ 15 หน่วย ถ้าไม่มีน้ำก็ไม่ได้อะไร
             }
             building_->process();
             itemFromResource_ = building_->getItem();

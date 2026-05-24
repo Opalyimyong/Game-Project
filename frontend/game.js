@@ -313,8 +313,8 @@ function drawGame() {
                     ctx.font = "bold 16px 'Segoe UI', Tahoma, sans-serif"; // Slightly larger since it's just emojis now
                     let passives = [];
                     // Only display the icon if the index is high enough to actually build the plant (>= 50)
-                    if (node.sunlight >= 50) passives.push(`☀️`);
-                    if (node.wind >= 50) passives.push(`💨`);
+                    if (node.sunlight >= 50) passives.push(`☀️ ${node.sunlight}%`);
+                    if (node.wind >= 50) passives.push(`💨 ${node.wind}%`);
                     if (node.water) passives.push(`💧`);
                     
                     if (passives.length > 0) {
