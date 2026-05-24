@@ -295,7 +295,7 @@ function drawGame() {
                 if (building) {
                     label = building.subtype || building.type;
                 } else if (node.type === 'City') {
-                    label = "City";
+                    label = `${node.subtype} City`;
                 } else if (node.type === 'Resource') {
                     label = node.subtype; // Display "Coal", "Gas", etc.
                 } else if (node.type === 'Power') {
