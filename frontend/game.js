@@ -521,6 +521,14 @@ function handleGridClick(row, col) {
             let valid = false;
             let errorMsg = "Invalid Link! Must be Resource->Power or Power->City.";
             
+            // Check if source node already has an outgoing link
+            const hasOutgoingLink = links.some(l => l.from.r === selectedNodeForLink.r && l.from.c === selectedNodeForLink.c);
+            if (hasOutgoingLink) {
+                showErrorPopup("A node can only send resources/energy to ONE destination!");
+                selectedNodeForLink = null;
+                return;
+            }
+            
             if (source.type === 'Resource' && dest.type === 'Power') {
                 const sourceB = buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c];
                 const destB = buildingLayer[row][col];
@@ -538,7 +546,20 @@ function handleGridClick(row, col) {
                     valid = true;
                 }
             } else if (source.type === 'Power' && dest.type === 'City') {
-                valid = true;
+                const sourceB = buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c];
+                if (!sourceB) {
+                    errorMsg = "Power node must have a building!";
+                } else {
+                    const passivePlants = ["Solar Plant", "Wind Plant", "Hydro Plant"];
+                    const isPassive = passivePlants.includes(sourceB.subtype);
+                    const hasIncomingLink = links.some(l => l.to.r === selectedNodeForLink.r && l.to.c === selectedNodeForLink.c);
+                    
+                    if (!isPassive && !hasIncomingLink) {
+                        errorMsg = `${sourceB.subtype} requires an incoming resource link before it can connect to a city!`;
+                    } else {
+                        valid = true;
+                    }
+                }
             }
 
             if (!valid) {

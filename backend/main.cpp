@@ -257,8 +257,35 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
                 else if (from_subtype == "Uranium" && to_subtype != "Nuclear Plant") valid_link = false;
             }
 
+            // Check outgoing link restriction
+            for (auto* lk : all_links_) {
+                if (lk->GetNodeA() && lk->GetNodeA()->GetX() == from_r && lk->GetNodeA()->GetY() == from_c) {
+                    valid_link = false;
+                    std::cout << "Link rejected! Node already has an outgoing link." << std::endl;
+                    break;
+                }
+            }
+
+            // Check incoming link requirement for non-passive power plants connecting to a city
+            if (valid_link && from_type == "Power" && to_type == "City") {
+                bool is_passive = (from_subtype == "Solar Plant" || from_subtype == "Wind Plant" || from_subtype == "Hydro Plant");
+                if (!is_passive) {
+                    bool has_incoming = false;
+                    for (auto* lk : all_links_) {
+                        if (lk->GetNodeB() && lk->GetNodeB()->GetX() == from_r && lk->GetNodeB()->GetY() == from_c) {
+                            has_incoming = true;
+                            break;
+                        }
+                    }
+                    if (!has_incoming) {
+                        valid_link = false;
+                        std::cout << "Link rejected! Power plant requires incoming resource link." << std::endl;
+                    }
+                }
+            }
+
             if (!valid_link) {
-                std::cout << "Link rejected! Incompatible Resource and Power Plant types." << std::endl;
+                std::cout << "Link rejected! Validation failed." << std::endl;
             } else if (p && p->executeManualAction(cost)) {
                 Node* nodeA = GetOrCreateNode(from_r, from_c, from_type, from_subtype);
                 Node* nodeB = GetOrCreateNode(to_r, to_c, to_type, to_subtype);
