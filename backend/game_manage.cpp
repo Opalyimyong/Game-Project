@@ -94,8 +94,8 @@ Player* GetCurrentPlayer() {
 
 bool NextTurn() {
     if (players_.empty() || isEndGame()) return false;
-    GetCurrentPlayer()->resetActionPoints();
     turn_index_ = (turn_index_ + 1) % players_.size();
+    GetCurrentPlayer()->resetActionPoints();
     std::cout << "Turn advanced. Now Player " << GetCurrentPlayer()->getId() << "'s turn.\n";
     if (turn_index_ == 0) return true;
     return false;
