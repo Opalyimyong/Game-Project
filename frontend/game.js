@@ -496,6 +496,27 @@ function handleGridClick(row, col) {
             const source = selectedNodeForLink.node;
             const dest = node;
             
+            // Validate AP
+            if (currentPlayer.ap <= 0) {
+                showErrorPopup("Not enough Action Points (AP)!");
+                selectedNodeForLink = null;
+                return;
+            }
+
+            // Calculate Link Cost
+            let dx = dest.c - selectedNodeForLink.c;
+            let dy = dest.r - selectedNodeForLink.r;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            let tType = (source.type === 'Resource') ? "Resource" : "Energy";
+            let rate = (tType === 'Resource') ? 2.0 : 1.0;
+            let cost = dist * rate;
+            
+            if (currentPlayer.coins < cost) {
+                showErrorPopup(`Not enough coins! Link costs 🪙${cost.toFixed(1)}.`);
+                selectedNodeForLink = null;
+                return;
+            }
+
             let valid = false;
             let errorMsg = "Invalid Link! Must be Resource->Power or Power->City.";
             
@@ -537,8 +558,6 @@ function handleGridClick(row, col) {
                 color: currentPlayer.color
             });
             
-            let tType = (source.type === 'Resource') ? "Resource" : "Energy";
-            
             let fromSubtype = source.subtype;
             let toSubtype = dest.subtype;
             if (buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c]) {
@@ -572,6 +591,12 @@ function endTurn() {
 }
 
 function disposeWaste() {
+    const p = players[currentPlayerIndex];
+    if (p.ap <= 0) {
+        showErrorPopup("Not enough Action Points (AP)!");
+        return;
+    }
+
     const amountStr = prompt("How much waste would you like to dispose? (Cost: 3 Coins per unit, requires 1 AP)");
     if (!amountStr) return;
     
@@ -581,7 +606,11 @@ function disposeWaste() {
         return;
     }
 
-    const p = players[currentPlayerIndex];
+    if (p.coins < amount * 3.0) {
+        showErrorPopup(`Not enough coins! Disposing ${amount} waste costs 🪙${amount * 3.0}.`);
+        return;
+    }
+
     sendActionToBackend({ action: "dispose_waste", amount: amount, player: p.id });
 }
 
@@ -631,6 +660,27 @@ function confirmBuild() {
     
     const subtype = document.getElementById('subtype-select').value;
     const currentPlayer = players[currentPlayerIndex];
+    
+    // Validate AP
+    if (currentPlayer.ap <= 0) {
+        showErrorPopup("Not enough Action Points (AP)!");
+        cancelBuild();
+        return;
+    }
+    
+    // Validate Coins
+    const costs = {
+        "Coal Plant": 120, "Gas Plant": 180, "Biomass Plant": 220, "Solar Plant": 350,
+        "Wind Plant": 280, "Hydro Plant": 400, "Nuclear Plant": 600,
+        "Coal": 100, "Gas": 160, "Biomass": 180, "Uranium": 500
+    };
+    const cost = costs[subtype] || 0;
+    if (currentPlayer.coins < cost) {
+        showErrorPopup(`Not enough coins! ${subtype} costs 🪙${cost}.`);
+        cancelBuild();
+        return;
+    }
+
     const row = pendingBuilding.r;
     const col = pendingBuilding.c;
     const node = nodeLayer[row][col];
