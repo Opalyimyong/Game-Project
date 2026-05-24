@@ -15,6 +15,19 @@ void broadcastGameState(struct mg_mgr *mgr) {
            << ",\"coins\":" << p->getCoins() << ",\"waste\":" << p->getTotalWaste() << "}";
         if (i < players_.size() - 1) ss << ",";
     }
+    ss << "],\"nodes\":[";
+    bool firstNode = true;
+    for (const auto* node : all_nodes_) {
+        if (node->GetType() == NodeType::City) {
+            auto* cityNode = dynamic_cast<const CityNode*>(node);
+            if (cityNode) {
+                if (!firstNode) ss << ",";
+                ss << "{\"r\":" << cityNode->GetX() << ",\"c\":" << cityNode->GetY() 
+                   << ",\"energy\":" << cityNode->EnergyNow() << ",\"isPowered\":" << (cityNode->isPowered() ? "true" : "false") << "}";
+                firstNode = false;
+            }
+        }
+    }
     ss << "]}";
     
     std::string response = ss.str();
@@ -82,6 +95,13 @@ void fn(struct mg_connection *c, int ev, void *ev_data) {
             size_t tm_pos = payload.find("\"timer_minutes\":");
             if (tm_pos != std::string::npos) {
                 game_timer_minutes_ = std::stoi(payload.substr(tm_pos + 16));
+            }
+            
+            size_t tc_pos = payload.find("\"total_cities\":");
+            if (tc_pos != std::string::npos) {
+                total_cities_in_game_ = std::stoi(payload.substr(tc_pos + 15));
+            } else {
+                total_cities_in_game_ = 8; // fallback to hardcoded map data
             }
             game_start_time_ = std::chrono::steady_clock::now();
             game_is_over_ = false;

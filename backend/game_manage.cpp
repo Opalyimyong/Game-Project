@@ -63,23 +63,23 @@ void SyncBuildingsToNodes(
 
 std::chrono::steady_clock::time_point game_start_time_;
 int game_timer_minutes_ = 10;
+int total_cities_in_game_ = 8;
 bool game_is_over_ = false;
 std::string game_over_reason_ = "";
 
 /*--------End Game Logic--------*/
 bool IsAllCityNodesPowered() {
-    bool hasCityNode = false;
+    int poweredCount = 0;
     for (const auto& node : all_nodes_) {
         if (node->GetType() != NodeType::City) {
             continue;
         }
-        hasCityNode = true;
         CityNode* cityNode = dynamic_cast<CityNode*>(node);
-        if (!cityNode->isPowered()) {
-            return false;
+        if (cityNode->isPowered()) {
+            poweredCount++;
         }
     }
-    return hasCityNode;
+    return poweredCount > 0 && poweredCount >= total_cities_in_game_;
 }
 
 Player* GetWinner() {

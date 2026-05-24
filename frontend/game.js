@@ -108,8 +108,8 @@ function initMap() {
                 type: 'City', 
                 subtype: d.subtype,
                 energy: 0, 
-                minEnergy: d.subtype === 'Big' ? 400 : 150,
-                maxEnergy: d.subtype === 'Big' ? 600 : 300,
+                minEnergy: d.subtype === 'Big' ? 25 : 10,
+                maxEnergy: d.subtype === 'Big' ? 40 : 20,
                 isPowered: false 
             };
         } else if (d.type === 'Power') {
@@ -354,6 +354,15 @@ socket.onmessage = (event) => {
                     localPlayer.waste = serverPlayer.waste;
                 }
             });
+            if (msg.nodes) {
+                msg.nodes.forEach(n => {
+                    let city = nodeLayer[n.r][n.c];
+                    if (city && city.type === 'City') {
+                        city.energy = n.energy;
+                        city.isPowered = n.isPowered;
+                    }
+                });
+            }
             updateHUD();
             drawGrid(); // Re-render grid to show updated UI state if necessary
         } else if (msg.action === "game_over") {
@@ -518,9 +527,7 @@ function handleGridClick(row, col) {
 
             // Reward player if connecting to city
             if (dest.type === 'City') {
-                currentPlayer.score += 10;
-                dest.energy += 150; // Simulate energy delivery
-                if (dest.energy >= dest.minEnergy) dest.isPowered = true;
+                // Do not instantly reward or power the city. The backend end-of-round simulation will handle energy and payouts!
             }
 
             links.push({

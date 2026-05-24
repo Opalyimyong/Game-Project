@@ -73,7 +73,8 @@ function startGame() {
         const data = { 
             type: "START_GAME", 
             players: playersData,
-            timer_minutes: timerMinutes
+            timer_minutes: timerMinutes,
+            total_cities: 8
         };
         socket.send(JSON.stringify(data));
         console.log("Data sent to C++...");
