@@ -169,7 +169,7 @@ waste = input * waste(%)
 ---
 # ขอให้สนุก 😉
 
-
+## วิดีโอ Demo
 
 CLIP แก้ไข ที่อัดหน้าจอไม่ติดค่ะ
 https://youtu.be/9DQ3uGvfxt4

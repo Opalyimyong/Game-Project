@@ -21,15 +21,16 @@ let camera = { x: 0, y: 0, isDragging: false, startX: 0, startY: 0 };
 
 // Load Players from sessionStorage
 let players = JSON.parse(sessionStorage.getItem("gamePlayers")) || [
-    { id: "p1", name: "Player 1", color: "#ff0044", ap: 3, score: 0, waste: 0, coins: 300 },
-    { id: "p2", name: "Player 2", color: "#0088ff", ap: 3, score: 0, waste: 0, coins: 300 }
+    { id: "p1", name: "Player 1", color: "#ff0044", ap: 3, score: 0, waste: 0, coins: 500 },
+    { id: "p2", name: "Player 2", color: "#0088ff", ap: 3, score: 0, waste: 0, coins: 500 },
+    { id: "p3", name: "Player 3", color: "#9900ff", ap: 3, score: 0, waste: 0, coins: 500 }
 ];
 
 // Ensure existing sessions without score/waste/coins get them initialized
 players.forEach(p => {
     if (typeof p.score === 'undefined') p.score = 0;
     if (typeof p.waste === 'undefined') p.waste = 0;
-    if (typeof p.coins === 'undefined') p.coins = 300;
+    if (typeof p.coins === 'undefined') p.coins = 500;
 });
 
 let currentPlayerIndex = 0;
@@ -108,8 +109,8 @@ function initMap() {
                 type: 'City', 
                 subtype: d.subtype,
                 energy: 0, 
-                minEnergy: d.subtype === 'Big' ? 400 : 150,
-                maxEnergy: d.subtype === 'Big' ? 600 : 300,
+                minEnergy: d.subtype === 'Big' ? 25 : 10,
+                maxEnergy: d.subtype === 'Big' ? 40 : 20,
                 isPowered: false 
             };
         } else if (d.type === 'Power') {
@@ -294,7 +295,7 @@ function drawGame() {
                 if (building) {
                     label = building.subtype || building.type;
                 } else if (node.type === 'City') {
-                    label = "City";
+                    label = `${node.subtype} City`;
                 } else if (node.type === 'Resource') {
                     label = node.subtype; // Display "Coal", "Gas", etc.
                 } else if (node.type === 'Power') {
@@ -312,8 +313,8 @@ function drawGame() {
                     ctx.font = "bold 16px 'Segoe UI', Tahoma, sans-serif"; // Slightly larger since it's just emojis now
                     let passives = [];
                     // Only display the icon if the index is high enough to actually build the plant (>= 50)
-                    if (node.sunlight >= 50) passives.push(`☀️`);
-                    if (node.wind >= 50) passives.push(`💨`);
+                    if (node.sunlight >= 50) passives.push(`☀️ ${node.sunlight}%`);
+                    if (node.wind >= 50) passives.push(`💨 ${node.wind}%`);
                     if (node.water) passives.push(`💧`);
                     
                     if (passives.length > 0) {
@@ -354,8 +355,19 @@ socket.onmessage = (event) => {
                     localPlayer.waste = serverPlayer.waste;
                 }
             });
+            if (msg.nodes) {
+                msg.nodes.forEach(n => {
+                    let city = nodeLayer[n.r][n.c];
+                    if (city && city.type === 'City') {
+                        city.energy = n.energy;
+                        city.isPowered = n.isPowered;
+                    }
+                });
+            }
             updateHUD();
             drawGrid(); // Re-render grid to show updated UI state if necessary
+        } else if (msg.action === "game_over") {
+            triggerGameOver(msg.winner_name, msg.winner_score, msg.reason);
         }
     } catch(e) {
         console.error("Error parsing websocket message:", e);
@@ -485,21 +497,80 @@ function handleGridClick(row, col) {
             const source = selectedNodeForLink.node;
             const dest = node;
             
+            // Validate AP
+            if (currentPlayer.ap <= 0) {
+                showErrorPopup("Not enough Action Points (AP)!");
+                selectedNodeForLink = null;
+                return;
+            }
+
+            // Calculate Link Cost
+            let dx = dest.c - selectedNodeForLink.c;
+            let dy = dest.r - selectedNodeForLink.r;
+            let dist = Math.sqrt(dx*dx + dy*dy);
+            let tType = (source.type === 'Resource') ? "Resource" : "Energy";
+            let rate = (tType === 'Resource') ? 2.0 : 1.0;
+            let cost = dist * rate;
+            
+            if (currentPlayer.coins < cost) {
+                showErrorPopup(`Not enough coins! Link costs 🪙${cost.toFixed(1)}.`);
+                selectedNodeForLink = null;
+                return;
+            }
+
             let valid = false;
-            if (source.type === 'Resource' && dest.type === 'Power') valid = true;
-            if (source.type === 'Power' && dest.type === 'City') valid = true;
+            let errorMsg = "Invalid Link! Must be Resource->Power or Power->City.";
+            
+            // Check if source node already has an outgoing link
+            const hasOutgoingLink = links.some(l => l.from.r === selectedNodeForLink.r && l.from.c === selectedNodeForLink.c);
+            if (hasOutgoingLink) {
+                showErrorPopup("A node can only send resources/energy to ONE destination!");
+                selectedNodeForLink = null;
+                return;
+            }
+            
+            if (source.type === 'Resource' && dest.type === 'Power') {
+                const sourceB = buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c];
+                const destB = buildingLayer[row][col];
+                if (!sourceB || !destB) {
+                    errorMsg = "Both nodes must have buildings to link them!";
+                } else if (sourceB.subtype === "Coal" && destB.subtype !== "Coal Plant") {
+                    errorMsg = "Coal can only be sent to a Coal Plant!";
+                } else if (sourceB.subtype === "Gas" && destB.subtype !== "Gas Plant") {
+                    errorMsg = "Gas can only be sent to a Gas Plant!";
+                } else if (sourceB.subtype === "Biomass" && destB.subtype !== "Biomass Plant") {
+                    errorMsg = "Biomass can only be sent to a Biomass Plant!";
+                } else if (sourceB.subtype === "Uranium" && destB.subtype !== "Nuclear Plant") {
+                    errorMsg = "Uranium can only be sent to a Nuclear Plant!";
+                } else {
+                    valid = true;
+                }
+            } else if (source.type === 'Power' && dest.type === 'City') {
+                const sourceB = buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c];
+                if (!sourceB) {
+                    errorMsg = "Power node must have a building!";
+                } else {
+                    const passivePlants = ["Solar Plant", "Wind Plant", "Hydro Plant"];
+                    const isPassive = passivePlants.includes(sourceB.subtype);
+                    const hasIncomingLink = links.some(l => l.to.r === selectedNodeForLink.r && l.to.c === selectedNodeForLink.c);
+                    
+                    if (!isPassive && !hasIncomingLink) {
+                        errorMsg = `${sourceB.subtype} requires an incoming resource link before it can connect to a city!`;
+                    } else {
+                        valid = true;
+                    }
+                }
+            }
 
             if (!valid) {
-                showMessage("Invalid Link! Must be Resource->Power or Power->City.");
+                showErrorPopup(errorMsg);
                 selectedNodeForLink = null;
                 return;
             }
 
             // Reward player if connecting to city
             if (dest.type === 'City') {
-                currentPlayer.score += 10;
-                dest.energy += 150; // Simulate energy delivery
-                if (dest.energy >= dest.minEnergy) dest.isPowered = true;
+                // Do not instantly reward or power the city. The backend end-of-round simulation will handle energy and payouts!
             }
 
             links.push({
@@ -509,11 +580,19 @@ function handleGridClick(row, col) {
                 color: currentPlayer.color
             });
             
-            let tType = (source.type === 'Resource') ? "Resource" : "Energy";
+            let fromSubtype = source.subtype;
+            let toSubtype = dest.subtype;
+            if (buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c]) {
+                fromSubtype = buildingLayer[selectedNodeForLink.r][selectedNodeForLink.c].subtype || fromSubtype;
+            }
+            if (buildingLayer[row][col]) {
+                toSubtype = buildingLayer[row][col].subtype || toSubtype;
+            }
+
             sendActionToBackend({ 
                   action: "link", 
-                  from: { r: selectedNodeForLink.r, c: selectedNodeForLink.c, type: source.type, subtype: source.subtype }, 
-                  to: { r: row, c: col, type: dest.type, subtype: dest.subtype }, 
+                  from: { r: selectedNodeForLink.r, c: selectedNodeForLink.c, type: source.type, subtype: fromSubtype }, 
+                  to: { r: row, c: col, type: dest.type, subtype: toSubtype }, 
                   player: currentPlayer.id, 
                   transport_type: tType 
               });
@@ -534,6 +613,12 @@ function endTurn() {
 }
 
 function disposeWaste() {
+    const p = players[currentPlayerIndex];
+    if (p.ap <= 0) {
+        showErrorPopup("Not enough Action Points (AP)!");
+        return;
+    }
+
     const amountStr = prompt("How much waste would you like to dispose? (Cost: 3 Coins per unit, requires 1 AP)");
     if (!amountStr) return;
     
@@ -543,7 +628,11 @@ function disposeWaste() {
         return;
     }
 
-    const p = players[currentPlayerIndex];
+    if (p.coins < amount * 3.0) {
+        showErrorPopup(`Not enough coins! Disposing ${amount} waste costs 🪙${amount * 3.0}.`);
+        return;
+    }
+
     sendActionToBackend({ action: "dispose_waste", amount: amount, player: p.id });
 }
 
@@ -593,8 +682,30 @@ function confirmBuild() {
     
     const subtype = document.getElementById('subtype-select').value;
     const currentPlayer = players[currentPlayerIndex];
+    
+    // Validate AP
+    if (currentPlayer.ap <= 0) {
+        showErrorPopup("Not enough Action Points (AP)!");
+        cancelBuild();
+        return;
+    }
+    
+    // Validate Coins
+    const costs = {
+        "Coal Plant": 80, "Gas Plant": 140, "Biomass Plant": 120, "Solar Plant": 160,
+        "Wind Plant": 180, "Hydro Plant": 250, "Nuclear Plant": 1200,
+        "Coal": 100, "Gas": 160, "Biomass": 180, "Uranium": 500
+    };
+    const cost = costs[subtype] || 0;
+    if (currentPlayer.coins < cost) {
+        showErrorPopup(`Not enough coins! ${subtype} costs 🪙${cost}.`);
+        cancelBuild();
+        return;
+    }
+
     const row = pendingBuilding.r;
     const col = pendingBuilding.c;
+    const node = nodeLayer[row][col];
     
     buildingLayer[row][col] = { 
         type: pendingBuilding.type, 
@@ -609,7 +720,10 @@ function confirmBuild() {
         subtype: subtype,
         r: row, 
         c: col, 
-        player: currentPlayer.id 
+        player: currentPlayer.id,
+        sunlight: node.sunlight || 0,
+        wind: node.wind || 0,
+        water: node.water || false
     });
     
     updateHUD();
@@ -621,3 +735,49 @@ function confirmBuild() {
 initMap();
 updateHUD();
 drawGame();
+
+// Error Modal Logic
+function showErrorPopup(msg) {
+    document.getElementById('error-message-text').textContent = msg;
+    document.getElementById('error-modal').style.display = 'flex';
+}
+
+function closeErrorModal() {
+    document.getElementById('error-modal').style.display = 'none';
+}
+
+// Timer Logic
+let remainingSeconds = (parseInt(sessionStorage.getItem('gameTimerMinutes')) || 10) * 60;
+const timerDisplay = document.getElementById('timer-display');
+
+function updateTimerDisplay() {
+    const mins = Math.floor(remainingSeconds / 60);
+    const secs = remainingSeconds % 60;
+    timerDisplay.textContent = `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    
+    if (remainingSeconds <= 60) {
+        timerDisplay.style.color = '#ff4444';
+        timerDisplay.style.borderColor = '#ff4444';
+        timerDisplay.style.textShadow = '0 0 10px rgba(255, 68, 68, 0.5)';
+    }
+}
+
+const timerInterval = setInterval(() => {
+    if (remainingSeconds > 0) {
+        remainingSeconds--;
+        updateTimerDisplay();
+    } else {
+        clearInterval(timerInterval);
+        timerDisplay.textContent = "00:00";
+    }
+}, 1000);
+updateTimerDisplay();
+
+// Game Over Logic
+function triggerGameOver(winnerName, winnerScore, reason) {
+    clearInterval(timerInterval);
+    document.getElementById('game-over-reason').textContent = reason;
+    document.getElementById('winner-name').textContent = winnerName;
+    document.getElementById('winner-score').textContent = `Score: ${winnerScore.toFixed(1)}`;
+    document.getElementById('game-over-modal').style.display = 'flex';
+}

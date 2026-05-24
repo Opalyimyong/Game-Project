@@ -56,38 +56,38 @@ void ResourceNode::fetchResourceType()
 }
 void ResourceNode::SetBuilding(std::unique_ptr<Building> building)
 {
-    if(building_ != nullptr) {
-    building_ = std::move(building);
-    bool isPlaced = building_->process();
-    item_ = building_->getItem();
-    fetchResourceType();
-}
+    if(building_ == nullptr) {
+        building_ = std::move(building);
+        bool isPlaced = building_->process();
+        item_ = building_->getItem();
+        fetchResourceType();
+    }
 }
 void PowerPlantNode::SetBuilding(std::unique_ptr<Building> building)
 {
-    if (building_ != nullptr) {
-    building_ = std::move(building);
-    checkInputType();
-    fetchPlantType();
+    if (building_ == nullptr) {
+        building_ = std::move(building);
+        checkInputType();
+        fetchPlantType();
 
-    if(source_type_ == SourceType::Passive)
-    {
-        if (plant_type_ == PlantType::SolarPlant)
+        if(source_type_ == SourceType::Passive)
         {
-            building_->addResourceInput({TransportType::Resource, getSolarIndex()});
+            if (plant_type_ == PlantType::SolarPlant)
+            {
+                building_->addResourceInput({TransportType::Resource, getSolarIndex()});
+            }
+            else if (plant_type_ == PlantType::WindPlant)
+            {
+                building_->addResourceInput({TransportType::Resource, getWindIndex()});
+            }
+            else if (plant_type_ == PlantType::HydroPlant)
+            {
+                building_->addResourceInput({TransportType::Resource, hasWater() ? 15.0 : 0.0}); // สมมติว่าถ้ามีน้ำก็ได้ 15 หน่วย ถ้าไม่มีน้ำก็ไม่ได้อะไร
+            }
+            building_->process();
+            itemFromResource_ = building_->getItem();
         }
-        else if (plant_type_ == PlantType::WindPlant)
-        {
-            building_->addResourceInput({TransportType::Resource, getWindIndex()});
-        }
-        else if (plant_type_ == PlantType::HydroPlant)
-        {
-            building_->addResourceInput({TransportType::Resource, hasWater() ? 5.0 : 0.0}); // สมมติว่าถ้ามีน้ำก็ได้ 5 หน่วย ถ้าไม่มีน้ำก็ไม่ได้อะไร
-        }
-        building_->process();
-        itemFromResource_ = building_->getItem();
     }
-}
 }
 void CityNode::setEnergyRange()
 {

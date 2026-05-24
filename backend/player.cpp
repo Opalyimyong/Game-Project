@@ -6,7 +6,7 @@
 #include <iostream>
 
 Player::Player(const std::string &id)
-    : id_(id), coins_(300.0), AP_(3), waste_(0.0), buildings_({}) {}
+    : id_(id), coins_(500.0), AP_(3), waste_(0.0), buildings_({}) {}
 
 bool Player::executeManualAction(double cost)
 {
